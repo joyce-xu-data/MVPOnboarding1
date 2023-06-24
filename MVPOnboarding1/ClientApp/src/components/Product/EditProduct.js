@@ -59,7 +59,7 @@ export class EditProduct extends Component {
             value="${productPrice}"
             onchange="window.opener.updateEditedPrice(this.value)"
           />
-          <button onclick="window.opener.saveEditedProduct(${productId})">Save</button>
+          <button onclick="saveAndClose(${productId})">Save</button>
           <button onclick="window.close()">Cancel</button>
           <script>
             // Function to update the edited name in the main window
@@ -72,11 +72,11 @@ export class EditProduct extends Component {
               window.opener.updateEditedPrice(value);
             };
 
-            // Function to save the edited product in the main window
-            window.saveEditedProduct = (productId) => {
+            // Function to save the edited product in the main window and close the edit window
+            function saveAndClose(productId) {
               window.opener.saveEditedProduct(productId);
               window.close();
-            };
+            }
           </script>
         </body>
       </html>

@@ -133,7 +133,6 @@ export class ProductList extends Component {
                 console.log('New product created.');
                 this.setState({ showCreatePopup: false });
                 this.populateProductData();
-                window.alert('Product created successfully!');
             } else {
                 const errorData = await response.json();
                 const errorMessage = errorData.message || 'Failed to create product.';

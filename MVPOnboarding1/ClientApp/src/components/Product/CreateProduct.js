@@ -57,7 +57,7 @@ export class CreateProduct extends Component {
             <button id="createButton">Create</button>
             <button onclick="window.close()">Cancel</button>
             <script>
-              // Function to handle creating a new product in the main window
+              // Function to handle creating a new product in the main window and close the create popup window
               function handleCreateProduct() {
                 const productName = document.getElementById('productName').value;
                 const productPrice = document.getElementById('productPrice').value;
@@ -65,6 +65,7 @@ export class CreateProduct extends Component {
                   { type: 'createProduct', name: productName, price: productPrice },
                   window.origin
                 );
+                window.close();
               }
 
               document.getElementById('createButton').addEventListener('click', handleCreateProduct);
