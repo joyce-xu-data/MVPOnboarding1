@@ -1,5 +1,5 @@
 ﻿import React, { Component } from 'react';
-import 'semantic-ui-css/semantic.min.css';
+
 
 export function generateDeleteWindowContent(productId) {
     return `
@@ -28,7 +28,7 @@ export function generateDeleteWindowContent(productId) {
             }
           `}
         </style>
-        <link rel="stylesheet" href="/path/to/your/semantic-ui-css/semantic.min.css">
+      
       </head>
       <body>
         <div class="ui segment">

@@ -1,5 +1,4 @@
 ﻿import React, { Component } from 'react';
-import 'semantic-ui-css/semantic.min.css';
 
 export class EditProduct extends Component {
     componentDidMount() {
@@ -22,7 +21,7 @@ export class EditProduct extends Component {
       <html>
         <head>
           <title>Edit Product</title>
-          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+         
           <style>
             /* Styles for the edit window */
             body {
