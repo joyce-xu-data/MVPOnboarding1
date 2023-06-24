@@ -1,7 +1,9 @@
 ﻿import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import CreateProduct from './CreateProduct';
-import EditProduct from './EditProduct'
+import EditProduct from './EditProduct';
+import { generateDeleteWindowContent } from './DeleteProduct';
+
 
 
 
@@ -152,7 +154,7 @@ export class ProductList extends Component {
             editedPrice: productPrice,
         });
 
-       
+
         // Global 
         window.updateEditedName = (value) => {
             this.setState({ editedName: value });
@@ -168,50 +170,23 @@ export class ProductList extends Component {
     };
 
 
-
     handleDelete = async (productId) => {
-
         // Open a new window
         const deleteWindow = window.open('', '_blank', 'width=400,height=300');
 
+        // Generate the content for the new window using the separate function
+        const deleteWindowContent = generateDeleteWindowContent(productId);
+
         // Write the content of the new window
-        deleteWindow.document.write(`
-      <html>
-        <head>
-          <style>
-            /* Styles for the delete window */
-          </style>
-        </head>
-        <body>
-          <h2>Delete Product</h2>
-        <p>Are you sure you want to delete this product?</p>
-        <button id="confirmDeleteButton">Yes</button>
-        <button id="cancelDeleteButton">No</button>
-        <script>
-          const confirmDeleteButton = document.getElementById('confirmDeleteButton');
-          const cancelDeleteButton = document.getElementById('cancelDeleteButton');
-
-          confirmDeleteButton.addEventListener('click', () => {
-            window.opener.confirmDeleteProduct(${productId});
-            window.close();
-          });
-
-          cancelDeleteButton.addEventListener('click', () => {
-            window.close();
-          });
-
-          </script>
-        </body>
-      </html>
-    `);
+        deleteWindow.document.write(deleteWindowContent);
 
         // Global function to handle confirmation of deletion in the main window
         window.confirmDeleteProduct = (productId) => {
             this.handleConfirmDelete(productId);
             window.close();
         };
-
     };
+
 
     handleConfirmDelete = async (productId) => {
         // Make an API request to delete the product
