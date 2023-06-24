@@ -1,7 +1,7 @@
 ﻿import React, { Component } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import CreateProduct from './CreateProduct';
-import { Button, Modal } from 'semantic-ui-react';
+import EditProduct from './EditProduct'
 
 
 
@@ -80,7 +80,7 @@ export class ProductList extends Component {
                 <h1 id="tabelLabel">Product Details</h1>
                 <button className="ui button" onClick={this.openCreatePopup}>
                     Create New Product
-                </button>
+        </button>
                 {contents}
                 {error && (
                     <div className="error-popup">
@@ -90,9 +90,14 @@ export class ProductList extends Component {
                     </div>
                 )}
                 <CreateProduct />
-
+                {editingProductId && (
+                    <EditProduct
+                        productId={editingProductId}
+                        productName={this.state.editedName}
+                        productPrice={this.state.editedPrice}
+                    />
+                )}
             </div>
-
         );
     }
 
@@ -147,52 +152,7 @@ export class ProductList extends Component {
             editedPrice: productPrice,
         });
 
-        // Open a new window
-        const editWindow = window.open('', '_blank', 'width=400,height=300');
-
-        // Write the content of the new window
-        editWindow.document.write(`
-    <html>
-      <head>
-        <title>Edit Product</title>
-        <style>
-          /* Styles for the edit window */
-        </style>
-      </head>
-      <body>
-        <h2>Edit Product</h2>
-        <input
-          type="text"
-          value="${productName}"
-          onchange="window.opener.updateEditedName(this.value)"
-        />
-        <input
-          type="text"
-          value="${productPrice}"
-          onchange="window.opener.updateEditedPrice(this.value)"
-        />
-        <button onclick="window.opener.saveEditedProduct(${productId})">Save</button>
-        <button onclick="window.close()">Cancel</button>
-        <script>
-          // Function to update the edited name in the main window
-          window.updateEditedName = (value) => {
-            window.opener.updateEditedName(value);
-          };
-
-          // Function to update the edited price in the main window
-          window.updateEditedPrice = (value) => {
-            window.opener.updateEditedPrice(value);
-          };
-
-          // Function to save the edited product in the main window
-          window.saveEditedProduct = (productId) => {
-            window.opener.saveEditedProduct(productId);
-            window.close();
-          };
-        </script>
-      </body>
-    </html>
-  `);
+       
         // Global 
         window.updateEditedName = (value) => {
             this.setState({ editedName: value });
@@ -276,38 +236,6 @@ export class ProductList extends Component {
             this.setState({ error: error.message });
         }
     };
-
-
-    //handleDelete = async (productId) => {
-    //    const confirmDelete = window.confirm('Are you sure you want to delete this product?');
-
-    //    if (confirmDelete) {
-    //        console.log(`Delete product with ID ${productId}`);
-    //        console.log(`Delete API called`);
-    //        const response = await fetch(`api/products/${productId}`, {
-    //            method: 'DELETE',
-    //            headers: {
-    //                'Content-Type': 'application/json',
-    //            },
-    //        })
-    //            .then((response) => {
-
-    //                if (response.ok) {
-    //                    console.log(`Product with ID ${productId} deleted.`);
-    //                    this.populateProductData();
-    //                } else {
-    //                    return response.json().then((errorData) => {
-    //                        const errorMessage = errorData.message || 'Failed to delete product.';
-    //                        throw new Error(errorMessage);
-    //                    });
-
-    //                }
-    //            })
-
-    //    }
-    //};
-
-
 
 
     async populateProductData() {
