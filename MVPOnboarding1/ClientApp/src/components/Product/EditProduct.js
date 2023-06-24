@@ -1,4 +1,5 @@
 ﻿import React, { Component } from 'react';
+import 'semantic-ui-css/semantic.min.css';
 
 export class EditProduct extends Component {
     componentDidMount() {
@@ -21,8 +22,29 @@ export class EditProduct extends Component {
       <html>
         <head>
           <title>Edit Product</title>
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
           <style>
             /* Styles for the edit window */
+            body {
+              font-family: 'Segoe UI', sans-serif;
+              background-color: #f9f9f9;
+              padding: 20px;
+            }
+            
+            h2 {
+              font-size: 24px;
+              margin-bottom: 20px;
+            }
+            
+            input {
+              width: 100%;
+              padding: 10px;
+              margin-bottom: 10px;
+            }
+            
+            button {
+              margin-right: 10px;
+            }
           </style>
         </head>
         <body>
