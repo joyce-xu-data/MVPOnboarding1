@@ -1,0 +1,46 @@
+﻿<Properties StartupConfiguration="{722301FC-C30E-4B47-B03E-A39D6BA7DB6D}|Default">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.ItemProperties.MVPOnboarding1 PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.Workbench ActiveDocument="MVPOnboarding1/ClientApp/src/components/Product/ProductList.js">
+    <Files>
+      <File FileName="MVPOnboarding1/Dto/ProductDto.cs" Line="14" Column="1" />
+      <File FileName="MVPOnboarding1/ClientApp/src/AppRoutes.js" />
+      <File FileName="MVPOnboarding1/Controllers/ProductsController.cs" Line="87" Column="21" />
+      <File FileName="MVPOnboarding1/ClientApp/src/components/Product/ProductList.js" Line="417" Column="28" />
+      <File FileName="MVPOnboarding1/Code/Mapper.cs" Line="21" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="MVPOnboarding1" expanded="True">
+            <Node name="MVPOnboarding1" expanded="True">
+              <Node name="ClientApp" expanded="True">
+                <Node name="src" expanded="True">
+                  <Node name="components" expanded="True">
+                    <Node name="Customer" expanded="True" />
+                    <Node name="Product" expanded="True">
+                      <Node name="ProductList.js" selected="True" />
+                    </Node>
+                    <Node name="Store" expanded="True" />
+                  </Node>
+                </Node>
+                <Node name="package.json" expanded="True" />
+              </Node>
+              <Node name="Code" expanded="True" />
+              <Node name="Controllers" expanded="True" />
+              <Node name="Dto" expanded="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
