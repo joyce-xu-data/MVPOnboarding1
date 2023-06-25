@@ -32,6 +32,10 @@ const AppRoutes = [
         path: '/Store/storelist',
         element: <StoreList />
     },
+    {
+        path: '/Customer/customerlist',
+        element: <CustomerList />
+    },
 ];
 
 export default AppRoutes;

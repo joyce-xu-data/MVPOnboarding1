@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MVPOnboarding1.Models;
 using MVPOnboarding1.Code;
 using MVPOnboarding1.Dto;
-using MVPOnboarding1.Models;
 
 namespace MVPOnboarding1.Controllers
 {
@@ -30,40 +30,46 @@ namespace MVPOnboarding1.Controllers
             {
                 return NotFound();
             }
-
             var customers = await _context.Customers.Select(s => Mapper.MapCustomerDto(s)).ToListAsync();
-
             return new JsonResult(customers);
         }
+
         // GET: api/Customers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Customer>> GetCustomer(int id)
+        public async Task<ActionResult<CustomerDto>> GetCustomer(int id)
         {
             if (_context.Customers == null)
             {
                 return NotFound();
             }
-            var customer = await _context.Customers.FindAsync(id);
+            var customer = await _context.Customers.Select(s => Mapper.MapCustomerDto(s)).ToListAsync();
 
             if (customer == null)
             {
                 return NotFound();
             }
 
-            return customer;
+            return new JsonResult(customer);
         }
 
         // PUT: api/Customers/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCustomer(int id, Customer customer)
+        public async Task<IActionResult> Edit(int id, CustomerDto customer)
         {
             if (id != customer.Id)
             {
-                return BadRequest("Customer Ids don't match!");
+                return BadRequest();
             }
 
-            _context.Entry(customer).State = EntityState.Modified;
+            var existingCustomer = await _context.Customers.FindAsync(id);
+            if (existingCustomer == null)
+            {
+                return NotFound();
+            }
+
+            existingCustomer.Name = customer.Name;
+            existingCustomer.Address = customer.Address;
 
             try
             {
@@ -81,7 +87,7 @@ namespace MVPOnboarding1.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(customer);
         }
 
         // POST: api/Customers
@@ -100,42 +106,40 @@ namespace MVPOnboarding1.Controllers
             {
                 _context.Customers.Add(entity);
             }
+
             else
             {
                 _context.Customers.Update(entity).State = EntityState.Modified;
             }
-
-
 
             await _context.SaveChangesAsync();
 
             return new JsonResult(Mapper.MapCustomerDto(entity));
         }
 
-            // DELETE: api/Customers/5
-            [HttpDelete("{id}")]
-            public async Task<IActionResult> DeleteCustomer(int id)
+        // DELETE: api/Customers/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCustomer(int id)
+        {
+            if (_context.Customers == null)
             {
-                if (_context.Customers == null)
-                {
-                    return NotFound();
-                }
-
-                var customer = await _context.Customers.FindAsync(id);
-                if (customer == null)
-                {
-                    return NotFound();
-                }
-
-                _context.Customers.Remove(customer);
-                await _context.SaveChangesAsync();
-
-                return NoContent();
+                return NotFound();
+            }
+            var customer = await _context.Customers.FindAsync(id);
+            if (customer == null)
+            {
+                return NotFound();
             }
 
-            private bool CustomerExists(int id)
-            {
-                return (_context.Customers?.Any(e => e.Id == id)).GetValueOrDefault();
-            }
+            _context.Customers.Remove(customer);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        private bool CustomerExists(int id)
+        {
+            return (_context.Customers?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
+}
