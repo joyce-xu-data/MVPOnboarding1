@@ -7,17 +7,35 @@ namespace MVPOnboarding1.Code
 {
     public static class Mapper
     {
-        public static Dto.SaleDto MapSale(Models.Sale Sale)
-        {
-            var sale = new Dto.SaleDto
-            {
-               
-                CustomerName = Sale?.Customer?.Name,
-                ProductName = Sale?.Product?.Name,
-                StoreName = Sale?.Store?.Name,
-                //DateSold = Sale.DateSold,
-                Id = Sale.Id
 
+        public static Models.Sale MapSale(Dto.SaleDto Sale)
+        {
+            var sale = new Models.Sale();
+            if (Sale != null)
+            {
+                sale.Id = Sale.Id;
+                sale.Customer.Name = Sale.CustomerName;
+                sale.Product.Name = Sale.ProductName;
+                sale.Store.Name = Sale.StoreName;
+                sale.DateSold = Sale.DateSold;
+            }
+            return sale;
+        }
+
+        public static Dto.SaleDto MapSaleDto(Models.Sale Sale)
+        {
+            var sale = new SaleDto();
+
+            if (Sale != null)
+            {
+                sale = new Dto.SaleDto
+                {
+                    Id = Sale.Id,
+                    CustomerName = Sale?.Customer?.Name,
+                    ProductName = Sale?.Product?.Name,
+                    StoreName = Sale?.Store?.Name,
+                    DateSold = Sale?.DateSold,
+                };
             };
             return sale;
         }

@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MVPOnboarding1.Models;
+using MVPOnboarding1.Code;
+using MVPOnboarding1.Dto;
 
 namespace MVPOnboarding1.Controllers
 {
@@ -22,44 +19,67 @@ namespace MVPOnboarding1.Controllers
 
         // GET: api/Sales
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Sale>>> GetSales()
+        public async Task<ActionResult<IEnumerable<SaleDto>>> GetSales()
         {
-          if (_context.Sales == null)
-          {
-              return NotFound();
-          }
-            return await _context.Sales.ToListAsync();
+            if (_context.Sales == null)
+            {
+                return NotFound();
+            }
+
+            var sales = await _context.Sales
+                  .Include(p => p.Product)
+                  .Include(s => s.Store)
+                  .Include(c => c.Customer)
+                  .Select(sa => Mapper.MapSaleDto(sa))
+                  .ToListAsync();
+
+            return new JsonResult(sales);
         }
 
         // GET: api/Sales/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Sale>> GetSale(int id)
+        public async Task<ActionResult<SaleDto>> GetSale(int id)
         {
-          if (_context.Sales == null)
-          {
-              return NotFound();
-          }
-            var sale = await _context.Sales.FindAsync(id);
+            if (_context.Sales == null)
+            {
+                return NotFound();
+            }
+            var sale = await _context.Sales
+                .Include(p => p.Product)
+                .Include(s => s.Store)
+                .Include(c => c.Customer)
+                .Select(sa => Mapper.MapSaleDto(sa))
+                .ToListAsync();
 
             if (sale == null)
             {
                 return NotFound();
             }
 
-            return sale;
+            return new JsonResult(sale);
         }
 
         // PUT: api/Sales/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSale(int id, Sale sale)
+        public async Task<IActionResult> Edit(int id, SaleDto sale)
         {
             if (id != sale.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(sale).State = EntityState.Modified;
+            var existingSale = await _context.Sales.FindAsync(id);
+            if (existingSale == null)
+            {
+                return NotFound();
+            }
+
+            existingSale.Customer.Name = sale.CustomerName;
+            existingSale.Product.Name = sale.ProductName;
+            existingSale.Store.Name = sale.StoreName;
+            existingSale.DateSold = sale.DateSold;
+
 
             try
             {
@@ -77,22 +97,50 @@ namespace MVPOnboarding1.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(sale);
         }
 
         // POST: api/Sales
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Sale>> PostSale(Sale sale)
+        [HttpPost]
+        public async Task<ActionResult<SaleDto>> PostSale([FromBody] SaleInputDto saleInputDto)
         {
-          if (_context.Sales == null)
-          {
-              return Problem("Entity set 'Mvponboarding1Context.Sales'  is null.");
-          }
+            if (_context.Sales == null)
+            {
+                return Problem("Entity set 'Mvponboarding1Context.Sales' is null.");
+            }
+
+            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Name == saleInputDto.CustomerName);
+            if (customer == null)
+            {
+                return NotFound($"Customer with name '{saleInputDto.CustomerName}' not found.");
+            }
+
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Name == saleInputDto.ProductName);
+            if (product == null)
+            {
+                return NotFound($"Product with name '{saleInputDto.ProductName}' not found.");
+            }
+
+            var store = await _context.Stores.FirstOrDefaultAsync(s => s.Name == saleInputDto.StoreName);
+            if (store == null)
+            {
+                return NotFound($"Store with name '{saleInputDto.StoreName}' not found.");
+            }
+
+            var sale = new Sale
+            {
+                CustomerId = customer.Id,
+                ProductId = product.Id,
+                StoreId = store.Id,
+                DateSold = saleInputDto.DateSold
+            };
+
             _context.Sales.Add(sale);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetSale", new { id = sale.Id }, sale);
+            return new JsonResult(Mapper.MapSaleDto(sale));
         }
 
         // DELETE: api/Sales/5
