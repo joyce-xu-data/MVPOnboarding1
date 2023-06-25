@@ -1,19 +1,17 @@
-﻿<Properties StartupConfiguration="{722301FC-C30E-4B47-B03E-A39D6BA7DB6D}|Default">
+﻿<Properties GitUserInfo="UsingGIT" StartupConfiguration="{722301FC-C30E-4B47-B03E-A39D6BA7DB6D}|Default">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.DebuggingService.Breakpoints>
-    <BreakpointStore />
-  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints />
   <MonoDevelop.Ide.ItemProperties.MVPOnboarding1 PreferredExecutionTarget="/Applications/Google Chrome.app" />
   <MultiItemStartupConfigurations />
   <MonoDevelop.Ide.Workbench ActiveDocument="MVPOnboarding1/ClientApp/src/components/Product/ProductList.js">
     <Files>
       <File FileName="MVPOnboarding1/Dto/ProductDto.cs" />
-      <File FileName="MVPOnboarding1/Controllers/ProductsController.cs" Line="1" Column="1" />
-      <File FileName="MVPOnboarding1/ClientApp/src/components/Product/CreateProduct.js" Line="10" Column="6" />
+      <File FileName="MVPOnboarding1/Controllers/ProductsController.cs" />
+      <File FileName="MVPOnboarding1/ClientApp/src/components/Product/CreateProduct.js" />
       <File FileName="MVPOnboarding1/ClientApp/src/components/Product/ProductList.js" Line="196" Column="35" />
-      <File FileName="MVPOnboarding1/ClientApp/src/components/Product/DeleteProduct.js" Line="7" Column="1" />
-      <File FileName="MVPOnboarding1/ClientApp/src/components/Product/EditProduct.js" Line="1" Column="1" />
-      <File FileName="MVPOnboarding1/ClientApp/src/AppRoutes.js" Line="1" Column="1" />
+      <File FileName="MVPOnboarding1/ClientApp/src/components/Product/DeleteProduct.js" />
+      <File FileName="MVPOnboarding1/ClientApp/src/components/Product/EditProduct.js" />
+      <File FileName="MVPOnboarding1/ClientApp/src/AppRoutes.js" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">

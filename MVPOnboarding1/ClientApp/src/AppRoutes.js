@@ -4,6 +4,7 @@ import { FetchData } from "./components/FetchData";
 import { Home } from "./components/Home";
 import { CustomerList } from "./components/Customer/CustomerList";
 import { ProductList } from "./components/Product/ProductList";
+import { StoreList } from "./components/Store/StoreList";
 
 
 const AppRoutes = [
@@ -27,7 +28,10 @@ const AppRoutes = [
         path: '/product/productlist',
         element: <ProductList />
     },
-   
+    {
+        path: '/Store/storelist',
+        element: <StoreList />
+    },
 ];
 
 export default AppRoutes;

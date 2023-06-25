@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+﻿using System;
 using MVPOnboarding1.Dto;
 
+
 namespace MVPOnboarding1.Code
+
 {
     public static class Mapper
     {
@@ -9,46 +11,17 @@ namespace MVPOnboarding1.Code
         {
             var sale = new Dto.SaleDto
             {
+               
                 CustomerName = Sale?.Customer?.Name,
                 ProductName = Sale?.Product?.Name,
                 StoreName = Sale?.Store?.Name,
-                DateSold = Sale.DateSold,
+                //DateSold = Sale.DateSold,
                 Id = Sale.Id
-            };
 
+            };
             return sale;
         }
 
-        public static Dto.ProductDto MapProductDto(Models.Product Product)
-        {
-            var product = new ProductDto();
-
-            if (Product != null)
-            {
-                product = new Dto.ProductDto
-                {
-                    Id = Product.Id,
-                    Name = Product.Name,
-                    Price = Product.Price
-                };
-            }
-
-            return product;
-        }
-
-        public static Models.Product MapProduct(ProductDto Product)
-        {
-            var product = new Models.Product();
-
-            if (Product != null)
-            {
-                product.Id = Product.Id;
-                product.Name = Product.Name;
-                product.Price = Product.Price;
-            }
-
-            return product;
-        }
 
         public static Dto.CustomerDto MapCustomerDto(Models.Customer Customer)
         {
@@ -60,8 +33,9 @@ namespace MVPOnboarding1.Code
                 {
                     Id = Customer.Id,
                     Address = Customer.Address,
-                    Name = Customer.Name
+                    Name = Customer.Name,
                 };
+
             }
 
             return customer;
@@ -70,15 +44,74 @@ namespace MVPOnboarding1.Code
         public static Models.Customer MapCustomer(CustomerDto Customer)
         {
             var customer = new Models.Customer();
-
             if (Customer != null)
             {
                 customer.Id = Customer.Id;
                 customer.Address = Customer.Address;
                 customer.Name = Customer.Name;
             }
-
             return customer;
+        }
+
+
+        public static Dto.ProductDto MapProductDto(Models.Product Product)
+        {
+            var product = new ProductDto();
+            if (Product != null)
+            {
+                product = new Dto.ProductDto
+                {
+                    Id = Product.Id,
+                    Name = Product.Name,
+                    Price = Product.Price
+                };
+            }
+            return product;
+
+        }
+
+        public static Models.Product MapProduct(ProductDto Product)
+        {
+            var product = new Models.Product();
+            if (Product != null)
+            {
+                product.Id = Product.Id;
+                product.Name = Product.Name;
+                product.Price = Product.Price;
+
+            }
+            return product;
+        }
+
+        public static Dto.StoreDto MapStoreDto(Models.Store Store)
+        {
+            var store = new StoreDto();
+            if (Store != null)
+            {
+                store = new Dto.StoreDto
+                {
+                    Id = Store.Id,
+                    Name = Store.Name,
+                    Address = Store.Address
+                };
+            }
+            return store;
+        }
+
+        public static Models.Store MapStore(StoreDto Store)
+        {
+            var store = new Models.Store();
+            if (Store != null)
+            {
+                store = new Models.Store
+                {
+                    Id = Store.Id,
+                    Name = Store.Name,
+                    Address = Store.Address
+                };
+            }
+
+            return store;
         }
 
     }
