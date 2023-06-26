@@ -1,12 +1,10 @@
-import React from 'react';
 import { Counter } from "./components/Counter";
 import { FetchData } from "./components/FetchData";
 import { Home } from "./components/Home";
 import { CustomerList } from "./components/Customer/CustomerList";
-import { ProductList } from "./components/Product/ProductList";
-import { StoreList } from "./components/Store/StoreList";
-import { SaleList } from "./components/Sale/SaleList";
-
+import { ProductList } from './components/Product/ProductList';
+import { StoreList } from './components/Store/StoreList';
+import { SaleList } from './components/Sale/SaleList';
 
 const AppRoutes = [
     {
@@ -21,7 +19,7 @@ const AppRoutes = [
         path: '/fetch-data',
         element: <FetchData />
     },
-    {   
+    {
         path: '/customer/customerlist',
         element: <CustomerList />
     },
@@ -30,18 +28,14 @@ const AppRoutes = [
         element: <ProductList />
     },
     {
-        path: '/Store/storelist',
+        path: '/store/storelist',
         element: <StoreList />
     },
     {
-        path: '/Customer/customerlist',
-        element: <CustomerList />
-    },
-    {
-        path: '/Sale/salelist',
+        path: '/sale/salelist',
         element: <SaleList />
-    },
+    }
+
 ];
 
 export default AppRoutes;
-
