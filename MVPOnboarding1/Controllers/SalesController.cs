@@ -40,23 +40,20 @@ namespace MVPOnboarding1.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<SaleDto>> GetSale(int id)
         {
-            if (_context.Sales == null)
-            {
-                return NotFound();
-            }
             var sale = await _context.Sales
                 .Include(p => p.Product)
                 .Include(s => s.Store)
                 .Include(c => c.Customer)
+                .Where(s => s.Id == id) // Filter by sale ID
                 .Select(sa => Mapper.MapSaleDto(sa))
-                .ToListAsync();
+                .FirstOrDefaultAsync();
 
             if (sale == null)
             {
                 return NotFound();
             }
 
-            return new JsonResult(sale);
+            return sale;
         }
 
         // PUT: api/Sales/5
@@ -69,17 +66,21 @@ namespace MVPOnboarding1.Controllers
                 return BadRequest();
             }
 
-            var existingSale = await _context.Sales.FindAsync(id);
+            var existingSale = await _context.Sales
+                .Include(s => s.Customer)
+                .Include(s => s.Product)
+                .Include(s => s.Store)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
             if (existingSale == null)
             {
                 return NotFound();
             }
-
+                
             existingSale.Customer.Name = sale.CustomerName;
             existingSale.Product.Name = sale.ProductName;
             existingSale.Store.Name = sale.StoreName;
             existingSale.DateSold = sale.DateSold;
-
 
             try
             {
@@ -99,6 +100,7 @@ namespace MVPOnboarding1.Controllers
 
             return Ok(sale);
         }
+
 
         // POST: api/Sales
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

@@ -178,7 +178,7 @@ export class SaleList extends Component {
             this.setState({ editedDateSold: value });
         };
 
-        window.saveEditeDateSold = (saleId) => {
+        window.saveEditedDateSold = (saleId) => {
             this.handleSave(saleId);
         };
     };
