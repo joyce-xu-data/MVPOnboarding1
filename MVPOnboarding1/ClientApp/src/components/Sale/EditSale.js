@@ -2,10 +2,6 @@
 
 const EditSale = (props) => {
     const { saleId, customerName, productName, storeName, dateSold, onSave } = props;
-    const [editedCustomerName, setEditedCustomerName] = useState(customerName);
-    const [editedProductName, setEditedProductName] = useState(productName);
-    const [editedStoreName, setEditedStoreName] = useState(storeName);
-    const [editedDateSold, setEditedDateSold] = useState(dateSold);
     const [isSaleCreatedOrDeleted, setIsSaleCreatedOrDeleted] = useState(false); // Flag to track sale creation or deletion
 
     useEffect(() => {
@@ -18,10 +14,16 @@ const EditSale = (props) => {
         const handlePopupMessage = (event) => {
             const { type, saleId: eventId, customerName, productName, storeName, dateSold } = event.data;
             if (type === 'updateSale' && eventId === saleId) {
-                setEditedCustomerName(customerName);
-                setEditedProductName(productName);
-                setEditedStoreName(storeName);
-                setEditedDateSold(dateSold);
+                onSave({
+                    saleId: eventId,
+                    customerName,
+                    productName,
+                    storeName,
+                    dateSold
+                });
+                window.removeEventListener('message', handlePopupMessage);
+                setIsSaleCreatedOrDeleted(true);
+                editWindow.close();
             }
         };
 
@@ -125,8 +127,6 @@ const EditSale = (props) => {
                 },
                 window.origin
               );
-
-              window.close();
             };
 
             const customerNameSelect = document.getElementById('customerName');
@@ -205,6 +205,7 @@ const EditSale = (props) => {
 
         return () => {
             window.removeEventListener('message', handlePopupMessage);
+            setIsSaleCreatedOrDeleted(true); // Update the flag to indicate sale creation or deletion
             editWindow.close();
         };
     }, [
@@ -217,6 +218,7 @@ const EditSale = (props) => {
         props.sale.products,
         props.sale.stores,
         isSaleCreatedOrDeleted,
+        onSave,
     ]);
 
     return null; // Since this is a popup

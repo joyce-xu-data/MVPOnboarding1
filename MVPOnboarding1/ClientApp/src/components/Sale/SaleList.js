@@ -224,8 +224,9 @@ export class SaleList extends Component {
         }
     };
 
-    handleSave = async (saleId) => {
+    handleSave = async () => {
         const {
+            editingSaleId,
             editedCustomerName,
             editedProductName,
             editedStoreName,
@@ -234,22 +235,22 @@ export class SaleList extends Component {
 
         // Make an API request to update the sale with the edited values
         try {
-            const response = await fetch(`api/sales/${saleId}`, {
+            const response = await fetch(`api/sales/${editingSaleId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    id: saleId,
-                    customerName: editedCustomerName,
+                    id: editingSaleId,
                     productName: editedProductName,
+                    customerName: editedCustomerName,
                     storeName: editedStoreName,
                     dateSold: editedDateSold,
                 }),
             });
 
-            if (response.ok) {
-                console.log(`Sale with ID ${saleId} updated.`);
+            if (response.ok) {  
+                console.log(`Sale with ID ${editingSaleId} updated.`);
                 this.populateSaleData();
                 // You may want to update the state or refresh the sale list
             } else {
