@@ -120,13 +120,13 @@ export class SaleList extends Component {
                 storeName,
                 dateSold,
             };
-            this.handleCreateCustomer(newSale);
+            this.handleCreateSale(newSale);
         } else if (type === 'cancelCreateSale') {
             this.closeCreatePopup();
         }
     };
 
-    handleCreateCustomer = async (saleData) => {
+    handleCreateSale = async (saleData) => {
         // Make an API request to create the customer
         try {
             const response = await fetch('api/sales', {

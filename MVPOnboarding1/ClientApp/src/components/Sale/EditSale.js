@@ -6,18 +6,18 @@ const EditSale = (props) => {
     const [editedProductName, setEditedProductName] = useState(productName);
     const [editedStoreName, setEditedStoreName] = useState(storeName);
     const [editedDateSold, setEditedDateSold] = useState(dateSold);
-
-    const handleSave = () => {
-        onSave(saleId, editedCustomerName, editedProductName, editedStoreName, editedDateSold);
-        window.close();
-    };
+    const [isSaleCreatedOrDeleted, setIsSaleCreatedOrDeleted] = useState(false); // Flag to track sale creation or deletion
 
     useEffect(() => {
+        if (isSaleCreatedOrDeleted) {
+            return; // Skip opening the edit window if sale was created or deleted
+        }
+
         const editWindow = window.open('', '_blank', 'width=400,height=500');
 
         const handlePopupMessage = (event) => {
-            const { type, customerName, productName, storeName, dateSold } = event.data;
-            if (type === 'updateSale') {
+            const { type, saleId: eventId, customerName, productName, storeName, dateSold } = event.data;
+            if (type === 'updateSale' && eventId === saleId) {
                 setEditedCustomerName(customerName);
                 setEditedProductName(productName);
                 setEditedStoreName(storeName);
@@ -25,7 +25,17 @@ const EditSale = (props) => {
             }
         };
 
-        editWindow.addEventListener('message', handlePopupMessage);
+        const handleSave = () => {
+            onSave(saleId, editedCustomerName, editedProductName, editedStoreName, editedDateSold);
+            setIsSaleCreatedOrDeleted(true); // Set flag to true after saving the sale
+            window.close();
+        };
+
+        const handleCloseWindow = () => {
+            window.removeEventListener('message', handlePopupMessage);
+            window.removeEventListener('beforeunload', handleCloseWindow);
+            editWindow.close();
+        };
 
         editWindow.document.open();
         editWindow.document.write(`
@@ -39,25 +49,25 @@ const EditSale = (props) => {
               background-color: #f9f9f9;
               padding: 20px;
             }
-              
+
             h2 {
               font-size: 24px;
               margin-bottom: 20px;
             }
-              
+
             .form-container {
               background-color: #fff;
               border: 1px solid #ddd;
               padding: 20px;
             }
-              
+
             .form-container select,
             .form-container input {
               width: 100%;
               padding: 10px;
               margin-bottom: 10px;
             }
-              
+
             .form-container button {
               margin-right: 10px;
             }
@@ -175,29 +185,37 @@ const EditSale = (props) => {
             });
 
             const saveButton = document.getElementById('saveButton');
-            saveButton.addEventListener('click', () => {
-              ${handleSave.toString()}();
-            });
+            saveButton.addEventListener('click', handleSave);
 
-            // Remove the event listener when the pop-up window is closed
-            window.addEventListener('beforeunload', () => {
-              saveButton.removeEventListener('click', () => {
-                ${handleSave.toString()}();
-              });
-            });
+            window.addEventListener('beforeunload', handleCloseWindow);
           </script>
         </body>
       </html>
     `);
         editWindow.document.close();
 
+        window.addEventListener('message', handlePopupMessage);
+        window.addEventListener('beforeunload', handleCloseWindow);
+
         return () => {
-            editWindow.removeEventListener('message', handlePopupMessage);
+            window.removeEventListener('message', handlePopupMessage);
+            window.removeEventListener('beforeunload', handleCloseWindow);
             editWindow.close();
         };
-    }, [customerName, productName, storeName, dateSold, saleId, onSave, props.sale.customers, props.sale.products, props.sale.stores]);
+    }, [
+        saleId,
+        customerName,
+        productName,
+        storeName,
+        dateSold,
+        onSave,
+        props.sale.customers,
+        props.sale.products,
+        props.sale.stores,
+        isSaleCreatedOrDeleted,
+    ]);
 
-    return null; // Since this is a popup window, return null as we don't need to render anything
+    return null; // Since this is a popup
 };
 
 export default EditSale;
