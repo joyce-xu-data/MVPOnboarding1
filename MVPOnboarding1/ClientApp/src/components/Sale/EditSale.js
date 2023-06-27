@@ -25,18 +25,6 @@ const EditSale = (props) => {
             }
         };
 
-        const handleSave = () => {
-            onSave(saleId, editedCustomerName, editedProductName, editedStoreName, editedDateSold);
-            setIsSaleCreatedOrDeleted(true); // Set flag to true after saving the sale
-            window.close();
-        };
-
-        const handleCloseWindow = () => {
-            window.removeEventListener('message', handlePopupMessage);
-            window.removeEventListener('beforeunload', handleCloseWindow);
-            editWindow.close();
-        };
-
         editWindow.document.open();
         editWindow.document.write(`
       <html>
@@ -120,6 +108,27 @@ const EditSale = (props) => {
             <button onclick="window.close()">Cancel</button>
           </div>
           <script>
+            const handleSave = () => {
+              const customerName = document.getElementById('customerName').value;
+              const productName = document.getElementById('productName').value;
+              const storeName = document.getElementById('storeName').value;
+              const dateSold = document.getElementById('dateSold').value;
+
+              window.opener.postMessage(
+                {
+                  type: 'updateSale',
+                  saleId: ${saleId},
+                  customerName: customerName,
+                  productName: productName,
+                  storeName: storeName,
+                  dateSold: dateSold,
+                },
+                window.origin
+              );
+
+              window.close();
+            };
+
             const customerNameSelect = document.getElementById('customerName');
             customerNameSelect.value = "${customerName}";
             customerNameSelect.addEventListener('change', (event) => {
@@ -186,8 +195,6 @@ const EditSale = (props) => {
 
             const saveButton = document.getElementById('saveButton');
             saveButton.addEventListener('click', handleSave);
-
-            window.addEventListener('beforeunload', handleCloseWindow);
           </script>
         </body>
       </html>
@@ -195,11 +202,9 @@ const EditSale = (props) => {
         editWindow.document.close();
 
         window.addEventListener('message', handlePopupMessage);
-        window.addEventListener('beforeunload', handleCloseWindow);
 
         return () => {
             window.removeEventListener('message', handlePopupMessage);
-            window.removeEventListener('beforeunload', handleCloseWindow);
             editWindow.close();
         };
     }, [
@@ -208,7 +213,6 @@ const EditSale = (props) => {
         productName,
         storeName,
         dateSold,
-        onSave,
         props.sale.customers,
         props.sale.products,
         props.sale.stores,
