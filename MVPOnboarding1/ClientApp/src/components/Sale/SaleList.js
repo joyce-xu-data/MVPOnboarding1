@@ -104,7 +104,6 @@ export class SaleList extends Component {
                         dateSold={this.state.editedDateSold}
                         onSave={this.handleSave}
                     />
-
                 )}
             </div>
         );
@@ -127,7 +126,7 @@ export class SaleList extends Component {
     };
 
     handleCreateSale = async (saleData) => {
-        // Make an API request to create the customer
+        // Make an API request to create the sale
         try {
             const response = await fetch('api/sales', {
                 method: 'POST',
@@ -160,27 +159,56 @@ export class SaleList extends Component {
             editedStoreName: storeName,
             editedDateSold: dateSold,
         });
+    };
 
-        // Global 
-        window.updateEditedCustomerName = (value) => {
-            this.setState({ editedCustomerName: value });
+    
+    handleSave = async () => {
+        console.log('handlesave being called')
+        const {
+            editingSaleId,
+            editedProductName,
+            editedCustomerName,
+            editedStoreName,
+            editedDateSold,
+        } = this.state;
+
+        const updatedSale = {
+            id: editingSaleId,
+            customerName: editedCustomerName,
+            productName: editedProductName,
+            storeName: editedStoreName,
+            dateSold: editedDateSold,
         };
 
-        window.updateEditedProductName = (value) => {
-            this.setState({ editedProductName: value });
-        };
+        try {
+            const response = await fetch(`api/sales/${editingSaleId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedSale),
+            });
 
-        window.updateEditedStoreName = (value) => {
-            this.setState({ editedStoreName: value });
-        };
+            if (response.ok) {
+                console.log('Updated sale:', JSON.stringify(updatedSale));
+                console.log(`Sale with ID ${editingSaleId} updated.`);
+                this.populateSaleData();
+            } else {
+                const errorData = await response.json();
+                const errorMessage = errorData.message || 'Failed to update sale.';
+                throw new Error(errorMessage);
+            }
+        } catch (error) {
+            console.error('Error:', error.message);
+            this.setState({ error: error.message });
+        }
 
-        window.updateEditedDateSold = (value) => {
-            this.setState({ editedDateSold: value });
-        };
+        this.handleCancelEdit();
+    };
 
-        window.saveEditedSaleId = (saleId) => {
-            this.handleSave(saleId);
-        };
+
+    handleCancelEdit = () => {
+        this.setState({ editingSaleId: null, editedCustomerName: '', editedProductName: '', editedStoreName: '', editedDateSold: '' });
     };
 
     handleDelete = async (saleId) => {
@@ -224,53 +252,6 @@ export class SaleList extends Component {
         }
     };
 
-    handleSave = async () => {
-        const {
-            editingSaleId,
-            editedCustomerName,
-            editedProductName,
-            editedStoreName,
-            editedDateSold,
-        } = this.state;
-
-        // Make an API request to update the sale with the edited values
-        try {
-            const response = await fetch(`api/sales/${editingSaleId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    id: editingSaleId,
-                    productName: editedProductName,
-                    customerName: editedCustomerName,
-                    storeName: editedStoreName,
-                    dateSold: editedDateSold,
-                }),
-            });
-
-            if (response.ok) {  
-                console.log(`Sale with ID ${editingSaleId} updated.`);
-                this.populateSaleData();
-                // You may want to update the state or refresh the sale list
-            } else {
-                const errorData = await response.json();
-                const errorMessage = errorData.message || 'Failed to update sale.';
-                throw new Error(errorMessage);
-            }
-        } catch (error) {
-            console.error('Error:', error.message);
-            this.setState({ error: error.message });
-        }
-
-        this.handleCancelEdit();
-    };
-
-
-    handleCancelEdit = () => {
-        this.setState({ editingSaleId: null, editedCustomerName: '', editedProductName: '', editedStoreName: '', editedDateSold: '' });
-    };
-
     async populateSaleData() {
         try {
             const response = await fetch('api/sales');
@@ -293,6 +274,76 @@ export class SaleList extends Component {
         } catch (error) {
             this.setState({ error: error.message });
         }
+    }
+
+    render() {
+        const {
+            loading,
+            sales,
+            editingSaleId,
+            editedCustomerName,
+            editedProductName,
+            editedStoreName,
+            editedDateSold,
+            customers,
+            products,
+            stores,
+        } = this.state;
+
+        if (loading) {
+            return <div>Loading...</div>;
+        }
+
+        return (
+            <div>
+                <h2>Sales</h2>
+
+                <CreateSale sale={{ customers, products, stores }} handleCreateSale={this.handleCreateSale} />
+
+                <table className="ui celled table" aria-labelledby="tabellabel">
+                    <thead>
+                        <tr>
+                            <th>Customer Name</th>
+                            <th>Product Name</th>
+                            <th>Store Name</th>
+                            <th>Date Sold</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {sales.map((sale) => (
+                            <tr key={sale.id}>
+                                <td>{sale.customerName}</td>
+                                <td>{sale.productName}</td>
+                                <td>{sale.storeName}</td>
+                                <td>{sale.dateSold ? new Date(sale.dateSold).toLocaleDateString('en-UK', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}</td>
+                                <td>
+                                    <button className="ui button" onClick={() => this.handleEdit(sale.id, sale.customerName, sale.productName, sale.storeName, sale.dateSold)}>Edit</button>
+                                    <button className="ui button" onClick={() => this.handleDelete(sale.id)}>Delete</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+
+                {editingSaleId && (
+                    <EditSale
+                        sale={{
+                            customers,
+                            products,
+                            stores,
+                        }}
+                        saleId={editingSaleId}
+                        customerName={editedCustomerName}
+                        productName={editedProductName}
+                        storeName={editedStoreName}
+                        dateSold={editedDateSold}
+                        onSave={this.handleSave}
+                        onCancel={this.handleCancelEdit}
+                    />
+                )}
+            </div>
+        );
     }
 }
 
