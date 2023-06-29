@@ -200,7 +200,7 @@ const EditSale = (props) => {
         </body>
       </html>
     `);
-        git
+        
 
         window.addEventListener('message', handlePopupMessage);
 

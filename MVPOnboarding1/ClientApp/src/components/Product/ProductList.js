@@ -5,8 +5,6 @@ import EditProduct from './EditProduct';
 import { generateDeleteWindowContent } from './DeleteProduct';
 
 
-
-
 export class ProductList extends Component {
     constructor(props) {
         super(props);
@@ -82,7 +80,7 @@ export class ProductList extends Component {
                 <h1 id="tabelLabel">Product Details</h1>
                 <button className="ui button" onClick={this.openCreatePopup}>
                     Create New Product
-        </button>
+                </button>
                 {contents}
                 {error && (
                     <div className="error-popup">

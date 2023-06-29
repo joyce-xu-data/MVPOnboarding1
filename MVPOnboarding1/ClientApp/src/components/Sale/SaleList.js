@@ -29,7 +29,7 @@ export class SaleList extends Component {
             products: [],
             stores: [],
         };
-       this.handleSave = this.handleSave.bind(this);
+        //console.log('handleSave3 being called');this.handleSave = this.handleSave.bind(this);
     }
     
     openCreatePopup = () => {

@@ -38,18 +38,16 @@ namespace MVPOnboarding1.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<StoreDto>> GetStore(int id)
         {
-            if (_context.Stores == null)
-            {
-                return NotFound();
-            }
-            var store = await _context.Stores.Select(s => Mapper.MapStoreDto(s)).ToListAsync();
+            var store = await _context.Stores.FindAsync(id);
 
             if (store == null)
             {
                 return NotFound();
             }
 
-            return new JsonResult(store);
+            var storeDto = Mapper.MapStoreDto(store);
+
+            return Ok(storeDto);
         }
 
         // PUT: api/Stores/5

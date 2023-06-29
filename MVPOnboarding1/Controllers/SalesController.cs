@@ -77,12 +77,15 @@ namespace MVPOnboarding1.Controllers
                 return NotFound();
             }
 
+            existingSale.Customer.Name = sale.CustomerName;
+            existingSale.Product.Name = sale.ProductName;
+            existingSale.Store.Name = sale.StoreName;
 
-            // Update the customer, product, and store names with new instances
-            existingSale.Customer = new Customer { Name = sale.CustomerName };
-            existingSale.Product = new Product { Name = sale.ProductName };
-            existingSale.Store = new Store { Name = sale.StoreName };
-            existingSale.DateSold = sale.DateSold;
+            //// Update the customer, product, and store names with new instances
+            //existingSale.Customer = new Customer { Name = sale.CustomerName };
+            //existingSale.Product = new Product { Name = sale.ProductName };
+            //existingSale.Store = new Store { Name = sale.StoreName };
+            //existingSale.DateSold = sale.DateSold;
 
             try
             {

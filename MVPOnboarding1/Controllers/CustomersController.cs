@@ -38,18 +38,16 @@ namespace MVPOnboarding1.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<CustomerDto>> GetCustomer(int id)
         {
-            if (_context.Customers == null)
-            {
-                return NotFound();
-            }
-            var customer = await _context.Customers.Select(s => Mapper.MapCustomerDto(s)).ToListAsync();
+            var customer= await _context.Customers.FindAsync(id);
 
             if (customer == null)
             {
                 return NotFound();
             }
 
-            return new JsonResult(customer);
+            var customerDto = Mapper.MapCustomerDto(customer);
+
+            return Ok(customerDto);
         }
 
         // PUT: api/Customers/5
