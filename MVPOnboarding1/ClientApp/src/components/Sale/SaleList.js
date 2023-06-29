@@ -126,6 +126,7 @@ export class SaleList extends Component {
             };
 
             // Update the state with the updated sales array
+           
             this.setState({ sales: updatedSales });
         }
 
