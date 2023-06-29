@@ -151,6 +151,9 @@ export class ProductList extends Component {
             editedPrice: productPrice,
         });
 
+        console.log('editingProductId:', productId);
+        console.log('editedProductName:', productName);
+        console.log('editedProductPrice:', productPrice)
 
         // Global 
         window.updateEditedName = (value) => {

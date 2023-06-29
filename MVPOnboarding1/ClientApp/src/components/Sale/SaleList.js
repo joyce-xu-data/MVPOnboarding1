@@ -9,7 +9,7 @@ import StoreList from '../Store/StoreList';
 
 const handlePostMessage = (message) => {
     window.opener.postMessage(message, window.origin);
-    };
+};
 
 export class SaleList extends Component {
     constructor(props) {
@@ -29,9 +29,9 @@ export class SaleList extends Component {
             products: [],
             stores: [],
         };
-        //console.log('handleSave3 being called');this.handleSave = this.handleSave.bind(this);
+        //this.handleSave = this.handleSave.bind(this);
     }
-    
+
     openCreatePopup = () => {
         this.setState({ showCreatePopup: true });
     };
@@ -88,6 +88,7 @@ export class SaleList extends Component {
     };
 
     handleEdit = (saleId, customerName, productName, storeName, dateSold) => {
+console.log('handleEdit being called')
         this.setState({
             editingSaleId: saleId,
             editedCustomerName: customerName,
@@ -97,7 +98,7 @@ export class SaleList extends Component {
         });
     };
 
-    
+
     handleSave = async () => {
         console.log('handleSave being called');
         const {
@@ -109,34 +110,23 @@ export class SaleList extends Component {
             sales, // Add sales to the destructured state
         } = this.state;
 
-        // Find the index of the sale being edited in the sales array
-        const editedSaleIndex = sales.findIndex((sale) => sale.id === editingSaleId);
+        console.log('editingSaleId:', editingSaleId);
+        console.log('editedProductName:', editedProductName);
+        console.log('editedCustomerName:', editedCustomerName);
+        console.log('editedStoreName:', editedStoreName);
+        console.log('editedDateSold:', editedDateSold);
+        console.log('sales:', sales);
 
-        if (editedSaleIndex !== -1) {
-            // Create a copy of the sales array
-            const updatedSales = [...sales];
 
-            // Update the edited sale with the new data
-            updatedSales[editedSaleIndex] = {
-                ...updatedSales[editedSaleIndex],
-                customerName: editedCustomerName,
-                productName: editedProductName,
-                storeName: editedStoreName,
-                dateSold: editedDateSold,
-            };
-
-            // Update the state with the updated sales array
-           
-            this.setState({ sales: updatedSales });
-        }
-
-        const updatedSale = {
+        const updatedSale = { 
             id: editingSaleId,
             customerName: editedCustomerName,
             productName: editedProductName,
             storeName: editedStoreName,
             dateSold: editedDateSold,
+            
         };
+        console.log(updatedSale);
 
         try {
             const response = await fetch(`api/sales/${editingSaleId}`, {
@@ -211,7 +201,7 @@ export class SaleList extends Component {
     };
 
     async populateSaleData() {
-       
+
         try {
             const response = await fetch('api/sales');
             const data = await response.json();
@@ -249,7 +239,7 @@ export class SaleList extends Component {
             stores,
         } = this.state;
 
-        
+
 
         if (loading) {
             return <div>Loading...</div>;

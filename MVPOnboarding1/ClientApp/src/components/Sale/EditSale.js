@@ -12,18 +12,29 @@ const EditSale = (props) => {
         const editWindow = window.open('', '_blank', 'width=400,height=500');
 
         const handlePopupMessage = (event) => {
-            const { type, saleId: eventId, customerName, productName, storeName, dateSold } = event.data;
+            console.log('Received message from popup:', event.data);
+            const { type, saleId: eventId, customerName: editedCustomerName, productName: editedProductName, storeName: editedStoreName, dateSold: editeDateSold } = event.data;
+
+            console.log('Received values:', {
+                type,
+                eventId,
+                editedCustomerName,
+                editedProductName,
+                editedStoreName,
+               
+            });
+
             if (type === 'updateSale' && eventId === saleId) {
                 const updatedSaleData = {
                     saleId: eventId,
-                    customerName,
-                    productName,
-                    storeName,
-                    dateSold
+                    customerName: editedCustomerName,
+                    productName: editedProductName,
+                    storeName: editedStoreName,
+                    dateSold: editeDateSold
                 };
                 console.log('Updated sale data:', updatedSaleData);
                 onSave(updatedSaleData);
-                console.log('onsave being called')
+                console.log('onsave being called');
                 window.removeEventListener('message', handlePopupMessage);
             }
         };
@@ -72,8 +83,8 @@ const EditSale = (props) => {
               <label>Customer:</label>
               <select id="customerName">
                 <option value="">Select Customer</option>
-               ${[...new Set(props.sale.customers.map(customer => customer.name))]
-                .map(customerName => `<option value="${customerName}">${customerName}</option>`)
+                ${[...new Set(props.sale.customers.map((customer) => customer.name))]
+                .map((customerName) => `<option value="${customerName}">${customerName}</option>`)
                 .join('')}
               </select>
             </div>
@@ -81,8 +92,8 @@ const EditSale = (props) => {
               <label>Product:</label>
               <select id="productName">
                 <option value="">Select Product</option>
-                ${[...new Set(props.sale.products.map(product => product.name))]
-                .map(productName => `<option value="${productName}">${productName}</option>`)
+                ${[...new Set(props.sale.products.map((product) => product.name))]
+                .map((productName) => `<option value="${productName}">${productName}</option>`)
                 .join('')}
               </select>
             </div>
@@ -90,8 +101,8 @@ const EditSale = (props) => {
               <label>Store:</label>
               <select id="storeName">
                 <option value="">Select Store</option>
-                ${[...new Set(props.sale.stores.map(store => store.name))]
-                .map(storeName => `<option value="${storeName}">${storeName}</option>`)
+                ${[...new Set(props.sale.stores.map((store) => store.name))]
+                .map((storeName) => `<option value="${storeName}">${storeName}</option>`)
                 .join('')}
               </select>
             </div>
@@ -99,6 +110,7 @@ const EditSale = (props) => {
               <label>Date Sold:</label>
               <input type="text" id="dateSold" placeholder="YYYY-MM-DD" />
             </div>
+
             <button id="saveButton">Save</button>
             <button onclick="window.close()">Cancel</button>
           </div>
@@ -124,15 +136,12 @@ const EditSale = (props) => {
 
             const customerNameSelect = document.getElementById('customerName');
             customerNameSelect.value = "${customerName}";
-            
 
             const productNameSelect = document.getElementById('productName');
             productNameSelect.value = "${productName}";
-            
 
             const storeNameSelect = document.getElementById('storeName');
             storeNameSelect.value = "${storeName}";
-           
 
             const dateSoldInput = document.getElementById('dateSold');
             dateSoldInput.value = "${dateSold}";
@@ -161,7 +170,7 @@ const EditSale = (props) => {
         window.addEventListener('message', handlePopupMessage);
 
         return () => {
-            window.removeEventListener('mefssage', handlePopupMessage);
+            window.removeEventListener('message', handlePopupMessage);
             setIsSaleCreatedOrDeleted(true); // Update the flag to indicate sale creation or deletion
             editWindow.close();
         };
@@ -179,7 +188,6 @@ const EditSale = (props) => {
     ]);
 
     return null; // Since this is a popup
-
 };
 
 export default EditSale;

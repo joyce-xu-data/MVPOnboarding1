@@ -36,7 +36,6 @@ namespace MVPOnboarding1.Controllers
             return new JsonResult(sales);
         }
 
-        // GET: api/Sales/5
         [HttpGet("{id}")]
         public async Task<ActionResult<SaleDto>> GetSale(int id)
         {
@@ -44,7 +43,7 @@ namespace MVPOnboarding1.Controllers
                 .Include(p => p.Product)
                 .Include(s => s.Store)
                 .Include(c => c.Customer)
-                .Where(s => s.Id == id) // Filter by sale ID
+                .Where(s => s.Id == id) // Filter by the specified ID
                 .Select(sa => Mapper.MapSaleDto(sa))
                 .FirstOrDefaultAsync();
 
@@ -53,11 +52,9 @@ namespace MVPOnboarding1.Controllers
                 return NotFound();
             }
 
-            return sale;
+            return new JsonResult(sale);
         }
 
-        // PUT: api/Sales/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> Edit(int id, SaleDto sale)
         {
@@ -77,15 +74,18 @@ namespace MVPOnboarding1.Controllers
                 return NotFound();
             }
 
-            existingSale.Customer.Name = sale.CustomerName;
-            existingSale.Product.Name = sale.ProductName;
-            existingSale.Store.Name = sale.StoreName;
 
-            //// Update the customer, product, and store names with new instances
-            //existingSale.Customer = new Customer { Name = sale.CustomerName };
-            //existingSale.Product = new Product { Name = sale.ProductName };
-            //existingSale.Store = new Store { Name = sale.StoreName };
-            //existingSale.DateSold = sale.DateSold;
+            // Update the relationship between the existing sale and the customer
+            existingSale.Customer = await _context.Customers.FirstOrDefaultAsync(c => c.Name == sale.CustomerName);
+
+            // Update the relationship between the existing sale and the product
+            existingSale.Product = await _context.Products.FirstOrDefaultAsync(p => p.Name == sale.ProductName);
+
+            // Update the relationship between the existing sale and the store
+            existingSale.Store = await _context.Stores.FirstOrDefaultAsync(s => s.Name == sale.StoreName);
+
+            existingSale.DateSold = sale.DateSold;
+
 
             try
             {
