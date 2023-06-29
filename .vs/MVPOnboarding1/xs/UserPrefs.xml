@@ -1,9 +1,12 @@
 ﻿<Properties GitUserInfo="UsingGIT" StartupConfiguration="{722301FC-C30E-4B47-B03E-A39D6BA7DB6D}|Default">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.DebuggingService.Breakpoints />
-  <MonoDevelop.Ide.ItemProperties.MVPOnboarding1 PreferredExecutionTarget="/Applications/Google Chrome.app" />
   <MultiItemStartupConfigurations />
-  <MonoDevelop.Ide.Workbench ActiveDocument="MVPOnboarding1/ClientApp/src/components/Product/ProductList.js">
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.MVPOnboarding1 PreferredExecutionTarget="/Applications/Google Chrome.app" />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workbench ActiveDocument="MVPOnboarding1/Program.cs">
     <Files>
       <File FileName="MVPOnboarding1/Dto/ProductDto.cs" />
       <File FileName="MVPOnboarding1/Controllers/ProductsController.cs" />
@@ -12,6 +15,9 @@
       <File FileName="MVPOnboarding1/ClientApp/src/components/Product/DeleteProduct.js" />
       <File FileName="MVPOnboarding1/ClientApp/src/components/Product/EditProduct.js" />
       <File FileName="MVPOnboarding1/ClientApp/src/AppRoutes.js" />
+      <File FileName="MVPOnboarding1/ClientApp/src/components/Sale/SaleList.js" Line="1" Column="1" />
+      <File FileName="MVPOnboarding1/ClientApp/src/components/Sale/EditSale.js" Line="213" Column="1" />
+      <File FileName="MVPOnboarding1/Program.cs" Line="33" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -22,9 +28,8 @@
                 <Node name="src" expanded="True">
                   <Node name="components" expanded="True">
                     <Node name="Customer" expanded="True" />
-                    <Node name="Product" expanded="True">
-                      <Node name="ProductList.js" selected="True" />
-                    </Node>
+                    <Node name="Product" expanded="True" />
+                    <Node name="Sale" expanded="True" />
                     <Node name="Store" expanded="True" />
                   </Node>
                 </Node>
@@ -36,14 +41,11 @@
               <Node name="Models" expanded="True" />
               <Node name="Pages" expanded="True" />
               <Node name="Properties" expanded="True" />
+              <Node name="Program.cs" selected="True" />
             </Node>
           </Node>
         </State>
       </Pad>
-      <Pad Id="MonoDevelop.Debugger.WatchPad">
-        <State />
-      </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
 </Properties>

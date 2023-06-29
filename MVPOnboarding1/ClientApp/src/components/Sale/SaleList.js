@@ -7,8 +7,13 @@ import CustomerList from '../Customer/CustomerList';
 import ProductList from '../Product/ProductList';
 import StoreList from '../Store/StoreList';
 
+const handlePostMessage = (message) => {
+    window.opener.postMessage(message, window.origin);
+    };
+
 export class SaleList extends Component {
     constructor(props) {
+
         super(props);
         this.state = {
             sales: [],
@@ -24,9 +29,9 @@ export class SaleList extends Component {
             products: [],
             stores: [],
         };
-        this.handleSave = this.handleSave.bind(this);
+       this.handleSave = this.handleSave.bind(this);
     }
-
+    
     openCreatePopup = () => {
         this.setState({ showCreatePopup: true });
     };
@@ -38,75 +43,6 @@ export class SaleList extends Component {
     componentDidMount() {
         this.populateSaleData();
         window.addEventListener('message', this.handlePopupMessage);
-    }
-
-    render() {
-        const {
-            loading,
-            sales,
-            editingSaleId,
-            editedCustomerName,
-            editedProductName,
-            editedStoreName,
-            editedDateSold,
-            customers,
-            products,
-            stores,
-        } = this.state;
-
-        if (loading) {
-            return <div>Loading...</div>;
-        }
-
-        return (
-            <div>
-                <h2>Sales</h2>
-
-                <CreateSale sale={{ customers, products, stores }} handleCreateSale={this.handleCreateSale} />
-
-                <table className="ui celled table" aria-labelledby="tabellabel">
-                    <thead>
-                        <tr>
-                            <th>Customer Name</th>
-                            <th>Product Name</th>
-                            <th>Store Name</th>
-                            <th>Date Sold</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {sales.map((sale) => (
-                            <tr key={sale.id}>
-                                <td>{sale.customerName}</td>
-                                <td>{sale.productName}</td>
-                                <td>{sale.storeName}</td>
-                                <td>{sale.dateSold ? new Date(sale.dateSold).toLocaleDateString('en-UK', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}</td>
-                                <td>
-                                    <button className="ui button" onClick={() => this.handleEdit(sale.id, sale.customerName, sale.productName, sale.storeName, sale.dateSold)}>Edit</button>
-                                    <button className="ui button" onClick={() => this.handleDelete(sale.id)}>Delete</button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-
-                {editingSaleId && (
-                    <EditSale
-                        sale={{
-                            customers,
-                            products,
-                            stores,
-                        }}
-                        saleId={editingSaleId}
-                        customerName={this.state.editedCustomerName}
-                        productName={this.state.editedProductName}
-                        storeName={this.state.editedStoreName}
-                        dateSold={this.state.editedDateSold}
-                        onSave={this.handleSave}
-                    />
-                )}
-            </div>
-        );
     }
 
     handlePopupMessage = (event) => {
@@ -163,14 +99,35 @@ export class SaleList extends Component {
 
     
     handleSave = async () => {
-        console.log('handlesave being called')
+        console.log('handleSave being called');
         const {
             editingSaleId,
             editedProductName,
             editedCustomerName,
             editedStoreName,
             editedDateSold,
+            sales, // Add sales to the destructured state
         } = this.state;
+
+        // Find the index of the sale being edited in the sales array
+        const editedSaleIndex = sales.findIndex((sale) => sale.id === editingSaleId);
+
+        if (editedSaleIndex !== -1) {
+            // Create a copy of the sales array
+            const updatedSales = [...sales];
+
+            // Update the edited sale with the new data
+            updatedSales[editedSaleIndex] = {
+                ...updatedSales[editedSaleIndex],
+                customerName: editedCustomerName,
+                productName: editedProductName,
+                storeName: editedStoreName,
+                dateSold: editedDateSold,
+            };
+
+            // Update the state with the updated sales array
+            this.setState({ sales: updatedSales });
+        }
 
         const updatedSale = {
             id: editingSaleId,
@@ -253,6 +210,7 @@ export class SaleList extends Component {
     };
 
     async populateSaleData() {
+       
         try {
             const response = await fetch('api/sales');
             const data = await response.json();
@@ -289,6 +247,8 @@ export class SaleList extends Component {
             products,
             stores,
         } = this.state;
+
+        
 
         if (loading) {
             return <div>Loading...</div>;

@@ -14,18 +14,19 @@ const EditSale = (props) => {
         const handlePopupMessage = (event) => {
             const { type, saleId: eventId, customerName, productName, storeName, dateSold } = event.data;
             if (type === 'updateSale' && eventId === saleId) {
-                onSave({
+                const updatedSaleData = {
                     saleId: eventId,
                     customerName,
                     productName,
                     storeName,
                     dateSold
-                });
+                };
+                console.log('Updated sale data:', updatedSaleData);
+                onSave(updatedSaleData);
                 window.removeEventListener('message', handlePopupMessage);
-                setIsSaleCreatedOrDeleted(true);
-                editWindow.close();
             }
         };
+
 
         editWindow.document.open();
         editWindow.document.write(`
@@ -95,7 +96,7 @@ const EditSale = (props) => {
               <select id="storeName">
                 <option value="">Select Store</option>
                 ${props.sale.stores
-                .map(
+                .map( 
                     (store) =>
                         `<option value="${store.name}">${store.name}</option>`
                 )
@@ -107,7 +108,7 @@ const EditSale = (props) => {
               <input type="text" id="dateSold" placeholder="YYYY-MM-DD" />
             </div>
             <button id="saveButton">Save</button>
-            <button onclick="window.close()">Cancel</button>
+            <button onclick="window.close()">Cancel</buttonck>
           </div>
           <script>
             const handleSave = () => {
@@ -199,14 +200,14 @@ const EditSale = (props) => {
         </body>
       </html>
     `);
-        editWindow.document.close();
+        git
 
         window.addEventListener('message', handlePopupMessage);
 
         return () => {
             window.removeEventListener('message', handlePopupMessage);
             setIsSaleCreatedOrDeleted(true); // Update the flag to indicate sale creation or deletion
-            editWindow.close();
+            //editWindow.close();
         };
     }, [
         saleId,
