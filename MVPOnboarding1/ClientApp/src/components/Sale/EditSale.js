@@ -2,40 +2,28 @@
 
 const EditSale = (props) => {
     const { saleId, customerName, productName, storeName, dateSold, onSave } = props;
-    const [isSaleCreatedOrDeleted, setIsSaleCreatedOrDeleted] = useState(false); // Flag to track sale creation or deletion
+    //const [isSaleCreatedOrDeleted, setIsSaleCreatedOrDeleted] = useState(false); // Flag to track sale creation or deletion
 
     useEffect(() => {
-        if (isSaleCreatedOrDeleted) {
-            return; // Skip opening the edit window if sale was created or deleted
-        }
+        //if (isSaleCreatedOrDeleted) {
+        //    return; // Skip opening the edit window if sale was created or deleted
+        //}
 
         const editWindow = window.open('', '_blank', 'width=400,height=500');
 
-        const handlePopupMessage = (event) => {
-            console.log('Received message from popup:', event.data);
-            const { type, saleId: eventId, customerName: editedCustomerName, productName: editedProductName, storeName: editedStoreName, dateSold: editeDateSold } = event.data;
-
-            console.log('Received values:', {
-                type,
-                eventId,
-                editedCustomerName,
-                editedProductName,
-                editedStoreName,
-               
-            });
-
+        const handlePopMessage = (event) => {
+            const { type, saleId: eventId, customerName, productName, storeName, dateSold } = event.data;
             if (type === 'updateSale' && eventId === saleId) {
                 const updatedSaleData = {
                     saleId: eventId,
-                    customerName: editedCustomerName,
-                    productName: editedProductName,
-                    storeName: editedStoreName,
-                    dateSold: editeDateSold
+                    customerName,
+                    productName,
+                    storeName,
+                    dateSold
                 };
                 console.log('Updated sale data:', updatedSaleData);
                 onSave(updatedSaleData);
-                console.log('onsave being called');
-                window.removeEventListener('message', handlePopupMessage);
+
             }
         };
 
@@ -83,8 +71,8 @@ const EditSale = (props) => {
               <label>Customer:</label>
               <select id="customerName">
                 <option value="">Select Customer</option>
-                ${[...new Set(props.sale.customers.map((customer) => customer.name))]
-                .map((customerName) => `<option value="${customerName}">${customerName}</option>`)
+               ${[...new Set(props.sale.customers.map(customer => customer.name))]
+                .map(customerName => `<option value="${customerName}">${customerName}</option>`)
                 .join('')}
               </select>
             </div>
@@ -92,8 +80,8 @@ const EditSale = (props) => {
               <label>Product:</label>
               <select id="productName">
                 <option value="">Select Product</option>
-                ${[...new Set(props.sale.products.map((product) => product.name))]
-                .map((productName) => `<option value="${productName}">${productName}</option>`)
+                ${[...new Set(props.sale.products.map(product => product.name))]
+                .map(productName => `<option value="${productName}">${productName}</option>`)
                 .join('')}
               </select>
             </div>
@@ -101,8 +89,8 @@ const EditSale = (props) => {
               <label>Store:</label>
               <select id="storeName">
                 <option value="">Select Store</option>
-                ${[...new Set(props.sale.stores.map((store) => store.name))]
-                .map((storeName) => `<option value="${storeName}">${storeName}</option>`)
+                ${[...new Set(props.sale.stores.map(store => store.name))]
+                .map(storeName => `<option value="${storeName}">${storeName}</option>`)
                 .join('')}
               </select>
             </div>
@@ -110,12 +98,13 @@ const EditSale = (props) => {
               <label>Date Sold:</label>
               <input type="text" id="dateSold" placeholder="YYYY-MM-DD" />
             </div>
-
-            <button id="saveButton">Save</button>
+            <button onclick="handleSave()">Save</button>
             <button onclick="window.close()">Cancel</button>
           </div>
           <script>
-            const handleSave = () => {
+
+
+          function handleSave() {
               const customerName = document.getElementById('customerName').value;
               const productName = document.getElementById('productName').value;
               const storeName = document.getElementById('storeName').value;
@@ -124,7 +113,7 @@ const EditSale = (props) => {
               window.opener.postMessage(
                 {
                   type: 'updateSale',
-                  saleId: ${saleId},
+                  saleId: ${(saleId)},
                   customerName: customerName,
                   productName: productName,
                   storeName: storeName,
@@ -132,46 +121,56 @@ const EditSale = (props) => {
                 },
                 window.origin
               );
+              window.opener.handleSave();
             };
+
+           // Function to update the edited name in the main window
+            window.updateEditedCustomerName = (value) => {
+              window.opener.updateEditedCustomerName(value);
+            };
+
+            window.updateEditedProductName = (value) => {
+              window.opener.updateEditedProductName(value);
+            };
+            window.updateEditedStoreName = (value) => {
+              window.opener.updateEditedStoreName(value);
+            };
+
+            window.updateEditedDateSold = (value) => {
+              window.opener.updateEditedDateSold(value);
+            };
+
+
+
 
             const customerNameSelect = document.getElementById('customerName');
             customerNameSelect.value = "${customerName}";
 
+
             const productNameSelect = document.getElementById('productName');
             productNameSelect.value = "${productName}";
+
 
             const storeNameSelect = document.getElementById('storeName');
             storeNameSelect.value = "${storeName}";
 
+
             const dateSoldInput = document.getElementById('dateSold');
             dateSoldInput.value = "${dateSold}";
-            dateSoldInput.addEventListener('change', (event) => {
-              window.opener.postMessage(
-                {
-                  type: 'updateSale',
-                  saleId: ${saleId},
-                  customerName: document.getElementById('customerName').value,
-                  productName: document.getElementById('productName').value,
-                  storeName: document.getElementById('storeName').value,
-                  dateSold: event.target.value,
-                },
-                window.origin
-              );
-            });
 
-            const saveButton = document.getElementById('saveButton');
-            saveButton.addEventListener('click', handleSave);
+
+
           </script>
         </body>
       </html>
     `);
         editWindow.document.close();
 
-        window.addEventListener('message', handlePopupMessage);
+        window.addEventListener('message', handlePopMessage);
 
         return () => {
-            window.removeEventListener('message', handlePopupMessage);
-            setIsSaleCreatedOrDeleted(true); // Update the flag to indicate sale creation or deletion
+
+            //setIsSaleCreatedOrDeleted(true); // Update the flag to indicate sale creation or deletion
             editWindow.close();
         };
     }, [
@@ -183,11 +182,12 @@ const EditSale = (props) => {
         props.sale.customers,
         props.sale.products,
         props.sale.stores,
-        isSaleCreatedOrDeleted,
+        //isSaleCreatedOrDeleted,
         onSave,
     ]);
 
     return null; // Since this is a popup
+
 };
 
 export default EditSale;

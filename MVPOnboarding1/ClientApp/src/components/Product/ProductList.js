@@ -222,8 +222,12 @@ export class ProductList extends Component {
         this.setState({ products: data, loading: false });
     }
 
-    handleSave = async () => {
+    handleSave = async (whatproduct) => {
+        console.log(whatproduct)
         const { editingProductId, editedName, editedPrice } = this.state;
+
+        
+        console.log(editingProductId, editedName, editedPrice)
 
         // Make an API request to update the product with the edited values
         try {

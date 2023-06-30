@@ -3,17 +3,10 @@ import 'semantic-ui-css/semantic.min.css';
 import CreateSale from './CreateSale';
 import EditSale from './EditSale';
 import { generateDeleteWindowContent } from './DeleteSale';
-import CustomerList from '../Customer/CustomerList';
-import ProductList from '../Product/ProductList';
-import StoreList from '../Store/StoreList';
 
-const handlePostMessage = (message) => {
-    window.opener.postMessage(message, window.origin);
-};
 
 export class SaleList extends Component {
     constructor(props) {
-
         super(props);
         this.state = {
             sales: [],
@@ -29,7 +22,7 @@ export class SaleList extends Component {
             products: [],
             stores: [],
         };
-        //this.handleSave = this.handleSave.bind(this);
+        this.handleSave = this.handleSave.bind(this);
     }
 
     openCreatePopup = () => {
@@ -44,6 +37,8 @@ export class SaleList extends Component {
         this.populateSaleData();
         window.addEventListener('message', this.handlePopupMessage);
     }
+
+
 
     handlePopupMessage = (event) => {
         const { type, customerName, productName, storeName, dateSold } = event.data;
@@ -88,45 +83,44 @@ export class SaleList extends Component {
     };
 
     handleEdit = (saleId, customerName, productName, storeName, dateSold) => {
-console.log('handleEdit being called')
+
         this.setState({
             editingSaleId: saleId,
             editedCustomerName: customerName,
             editedProductName: productName,
             editedStoreName: storeName,
             editedDateSold: dateSold,
+
         });
+
     };
 
 
-    handleSave = async () => {
-        console.log('handleSave being called');
+
+    handleSave = async (xxx) => {
+        console.log('handlesave being called')
         const {
             editingSaleId,
-            editedProductName,
             editedCustomerName,
+            editedProductName,
+
             editedStoreName,
             editedDateSold,
-            sales, // Add sales to the destructured state
         } = this.state;
 
-        console.log('editingSaleId:', editingSaleId);
-        console.log('editedProductName:', editedProductName);
-        console.log('editedCustomerName:', editedCustomerName);
-        console.log('editedStoreName:', editedStoreName);
-        console.log('editedDateSold:', editedDateSold);
-        console.log('sales:', sales);
-
-
-        const updatedSale = { 
+        const updatedSale = {
             id: editingSaleId,
-            customerName: editedCustomerName,
-            productName: editedProductName,
-            storeName: editedStoreName,
-            dateSold: editedDateSold,
-            
+            customerName: xxx.customerName,
+            productName: xxx.productName,
+            storeName: xxx.storeName,
+            dateSold: xxx.dateSold,
         };
-        console.log(updatedSale);
+
+        console.log('xxx: ', xxx);
+        console.log('Updated sale:',
+            JSON.stringify({
+                updatedSale
+            }));
 
         try {
             const response = await fetch(`api/sales/${editingSaleId}`, {
@@ -134,13 +128,15 @@ console.log('handleEdit being called')
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(updatedSale),
+                body: JSON.stringify(
+                    updatedSale
+                ),
             });
 
             if (response.ok) {
-                console.log('Updated sale:', JSON.stringify(updatedSale));
-                console.log(`Sale with ID ${editingSaleId} updated.`);
+
                 this.populateSaleData();
+                console.log(`Sale with ID ${editingSaleId} updated.`);
             } else {
                 const errorData = await response.json();
                 const errorMessage = errorData.message || 'Failed to update sale.';
@@ -201,7 +197,6 @@ console.log('handleEdit being called')
     };
 
     async populateSaleData() {
-
         try {
             const response = await fetch('api/sales');
             const data = await response.json();
@@ -239,11 +234,10 @@ console.log('handleEdit being called')
             stores,
         } = this.state;
 
-
-
         if (loading) {
             return <div>Loading...</div>;
         }
+
 
         return (
             <div>
@@ -291,11 +285,15 @@ console.log('handleEdit being called')
                         dateSold={editedDateSold}
                         onSave={this.handleSave}
                         onCancel={this.handleCancelEdit}
+
                     />
                 )}
+
             </div>
+
         );
     }
 }
 
 export default SaleList;
+
