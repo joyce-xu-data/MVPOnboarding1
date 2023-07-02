@@ -1,19 +1,15 @@
 ﻿<Properties GitUserInfo="UsingGIT" StartupConfiguration="{722301FC-C30E-4B47-B03E-A39D6BA7DB6D}|Default">
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.ItemProperties.MVPOnboarding1 PreferredExecutionTarget="/Applications/Google Chrome.app" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MonoDevelop.Ide.Workbench ActiveDocument="MVPOnboarding1/ClientApp/src/components/Sale/EditSale.js">
+  <MonoDevelop.Ide.Workbench ActiveDocument="MVPOnboarding1/ClientApp/src/components/Customer/CustomerList.js">
     <Files>
-      <File FileName="MVPOnboarding1/Controllers/StoresController.cs" Line="40" Column="10" />
-      <File FileName="MVPOnboarding1/Controllers/CustomersController.cs" Line="50" Column="26" />
-      <File FileName="MVPOnboarding1/Controllers/SalesController.cs" Line="79" Column="37" />
-      <File FileName="MVPOnboarding1/ClientApp/src/components/Sale/SaleList.js" Line="290" Column="22" />
-      <File FileName="MVPOnboarding1/ClientApp/src/components/Sale/EditSale.js" Line="117" Column="19" />
-      <File FileName="MVPOnboarding1/ClientApp/src/components/Sale/CreateSale.js" Line="93" Column="24" />
-      <File FileName="MVPOnboarding1/ClientApp/src/components/Product/EditProduct.js" Line="61" Column="10" />
-      <File FileName="MVPOnboarding1/ClientApp/src/components/Product/ProductList.js" Line="236" Column="1" NotebookId="1" />
+      <File FileName="MVPOnboarding1/ClientApp/src/components/Customer/EditCustomer.js" Line="89" Column="29" />
+      <File FileName="MVPOnboarding1/ClientApp/src/components/Customer/CustomerList.js" Line="165" Column="33" />
+      <File FileName="MVPOnboarding1/ClientApp/src/components/Customer/CreateCustomer.js" Line="52" Column="32" NotebookId="1" />
+      <File FileName="MVPOnboarding1/ClientApp/src/components/Customer/DeleteCustomer.js" Line="18" Column="21" NotebookId="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -23,10 +19,11 @@
               <Node name="ClientApp" expanded="True">
                 <Node name="src" expanded="True">
                   <Node name="components" expanded="True">
-                    <Node name="Product" expanded="True" />
-                    <Node name="Sale" expanded="True">
-                      <Node name="EditSale.js" selected="True" />
+                    <Node name="Customer" expanded="True">
+                      <Node name="CustomerList.js" selected="True" />
                     </Node>
+                    <Node name="Product" expanded="True" />
+                    <Node name="Sale" expanded="True" />
                   </Node>
                 </Node>
               </Node>
@@ -38,6 +35,6 @@
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
 </Properties>

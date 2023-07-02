@@ -80,4 +80,3 @@ export class CreateCustomer extends Component {
     }
 }
 export default CreateCustomer;
-

@@ -1,27 +1,31 @@
 ﻿import React, { Component } from 'react';
 
 export class EditCustomer extends Component {
-    componentDidMount() {
-        window.addEventListener('message', this.handlePopupMessage);
-        this.openEditWindow();
-    }
+    //componentDidMount() {
+    //    console.log("componentdidmount-edit")
+    //    window.addEventListener('message', this.handlePopupMessage);
 
-    componentWillUnmount() {
-        window.removeEventListener('message', this.handlePopupMessage);
-    }
+    //}
 
-    openEditWindow = () => {
-        const { customerId, customerName, customerAddress } = this.props;
+    //componentWillUnmount() {
+    //    console.log("componentwillunmount")
+    //    window.removeEventListener('message', this.handlePopupMessage);
+    //}
+    //good practice to have the above but not necessary here as window.opener.postMessage sends the msg to parent window
 
-        // Open a new window
+
+    openEditWindow2 = (customerId, customerName, customerAddress) => {
+        console.log("openeditwindow-child")
+
         const editWindow = window.open('', '_blank', 'width=400,height=300');
+        console.log("this.editwindow")
 
         // Write the content of the new window
         editWindow.document.write(`
       <html>
         <head>
           <title>Edit Customer</title>
-        
+
           <style>
             /* Styles for the edit window */
             body {
@@ -29,18 +33,18 @@ export class EditCustomer extends Component {
               background-color: #f9f9f9;
               padding: 20px;
             }
-            
+
             h2 {
               font-size: 24px;
               margin-bottom: 20px;
             }
-            
+
             input {
               width: 100%;
               padding: 10px;
               margin-bottom: 10px;
             }
-            
+
             button {
               margin-right: 10px;
             }
@@ -50,32 +54,38 @@ export class EditCustomer extends Component {
           <h2>Edit Customer</h2>
           <input
             type="text"
-            value="${customerName}"
-            onchange="window.opener.updateEditedName(this.value)"
+            id = "nameInput"
+             value="${customerName}"
+
           />
           <input
             type="text"
+            id = "addressInput"
             value="${customerAddress}"
-            onchange="window.opener.updateEditedAddress(this.value)"
+            
           />
-          <button onclick="saveAndClose(${customerId})">Save</button>
-          <button onclick="window.close()">Cancel</button>
+          <button id="saveButton">Save</button>
+          <button onClick="window.close()">Cancel</button>
           <script>
             // Function to update the edited name in the main window
-            window.updateEditedName = (value) => {
-              window.opener.updateEditedName(value);
-            };
+            function handleEdit() {
+            // Get the edited values from the inputs and call the appropriate functions in the main window
+            const nameInput = document.getElementById('nameInput').value;
+            const addressInput = document.getElementById('addressInput').value;
 
-            // Function to update the edited address in the main window
-            window.updateEditedAddress = (value) => {
-              window.opener.updateEditedAddress(value);
-            };
+            window.opener.postMessage(
+              { type: 'updateCustomer',
+                customerId:${customerId},
+                name: nameInput,
+                address: addressInput },
+              window.origin
+            );
+            window.close();
+          }
 
-            // Function to save the edited customer in the main window and close the edit window
-            function saveAndClose(customerId) {
-              window.opener.saveEditedCustomer(customerId);
-              window.close();
-            }
+            document.getElementById('saveButton').addEventListener('click', handleEdit);
+
+          
           </script>
         </body>
       </html>
@@ -86,4 +96,5 @@ export class EditCustomer extends Component {
         return null; // Since this is a popup window, return null as we don't need to render anything
     }
 }
+
 export default EditCustomer;

@@ -15,6 +15,7 @@ export class CustomerList extends Component {
             editedAddress: '',
             error: null,
             showCreatePopup: false,
+            showEditWindow: false
 
         };
         this.handleSave = this.handleSave.bind(this);
@@ -24,12 +25,33 @@ export class CustomerList extends Component {
         createCustomer.openCreatePopup();
     };
 
+    openEditWindow = (customer) => {
+        const { id: customerId, name: customerName, address: customerAddress } = customer;
+        const editCustomer = new EditCustomer();
+        editCustomer.openEditWindow2(customerId, customerName, customerAddress);
+
+        console.log("openEditWindow2")
+
+    };
+
+    //openEditWindow = (customerId, customerName, customerAddress) => {
+    //    this.setState({
+    //        editingCustomerId: customerId,
+    //        editedName: customerName,
+    //        editedAddress: customerAddress,
+    //        showEditWindow: true
+    //    });
+
+    //    console.log("openEditWindow")
+    //};
+
     componentDidMount() {
+        console.log("component did mount - parent")
         this.populateCustomerData();
         window.addEventListener('message', this.handlePopupMessage);
     }
 
-    static renderCustomerTable(customers, handleEdit, handleDelete, handleSave) {
+    renderCustomerTable(customers, handleEdit, handleDelete, handleSave) {
         return (
             <table className="ui celled table" aria-labelledby="tabellabel">
                 <thead>
@@ -46,7 +68,9 @@ export class CustomerList extends Component {
                             <td>{customer.name}</td>
                             <td>{customer.address}</td>
                             <td>
-                                <button className="ui button" onClick={() => handleEdit(customer.id, customer.name, customer.address)}>
+                                <button className="ui button" onClick={() => this.openEditWindow(customer)
+
+                                }>
                                     Edit
                                 </button>
                             </td>
@@ -58,18 +82,18 @@ export class CustomerList extends Component {
                         </tr>
                     ))}
                 </tbody>
-            </table>
+            </table >
         );
     }
 
     render() {
-        const { loading, customers, editingCustomerId, error } = this.state;
+        const { loading, customers, editingCustomerId, error, showEditWindow, editedName, editedAddress } = this.state;
         let contents = loading ? (
             <p>
                 <em>Loading...</em>
             </p>
         ) : (
-                CustomerList.renderCustomerTable(customers, this.handleEdit, this.handleDelete)
+                this.renderCustomerTable(customers, this.openEditWindow, this.handleDelete, this.handleSave)
             );
         return (
             <div>
@@ -86,11 +110,19 @@ export class CustomerList extends Component {
                     </div>
                 )}
                 <CreateCustomer />
-                {editingCustomerId && (
+                {showEditWindow && editingCustomerId && (
                     <EditCustomer
-                        customerId={editingCustomerId}
-                        customerName={this.state.editedName}
-                        customerAddress={this.state.editedAddress}
+                        //customerId={editingCustomerId}
+                        //customerName={editedName}
+                        //customerAddress={editedAddress}
+                        //onSave={this.handleSave}
+                        //onCancel={this.handleCancelEdit}
+                        editingCustomerId={editingCustomerId}
+                        editedName={editedName}
+                        editedAddress={editedAddress}
+                        onSave={this.handleSave}
+                        //onCancel={this.handleCancelEdit}
+
                     />
 
                 )}
@@ -100,11 +132,72 @@ export class CustomerList extends Component {
     }
 
     handlePopupMessage = (event) => {
-        const { type, name, address } = event.data;
+
+        const { type, customerId: eventId, name, address } = event.data;
         if (type === 'createCustomer') {
             this.handleCreateCustomer(name, address);
+            console.log("handlecreatecust", eventId)
+        } else if (type === 'updateCustomer') {
+
+            const updatedCustomerData = {
+                customerId: eventId,
+                name,
+                address
+            };
+            console.log("type:", type, "id:", eventId)
+            this.handleEdit(updatedCustomerData)
+            console.log('updated customer data: ', updatedCustomerData);
         }
     };
+
+    handleEdit = ({ customerId, name: customerName, address: customerAddress }) => {
+        console.log("HandleEDIT", customerId, customerName, customerAddress)
+        // Store the customer ID, name, and address in the component state
+        this.setState({
+            editingCustomerId: customerId,
+            editedName: customerName,
+            editedAddress: customerAddress,
+
+        }, () => {
+            // Call handleSave once the state is updated
+            this.handleSave();
+        });
+    };
+
+    handleSave = async () => {
+        const { editingCustomerId, editedName, editedAddress } = this.state;
+        console.log(editingCustomerId, editedName, editedAddress)
+
+    // Make an API request to update the customer with the edited values
+    try {
+        const response = await fetch(`api/customers/${editingCustomerId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: editingCustomerId,
+                name: editedName,
+                address:editedAddress
+            }),
+        });
+
+        if (response.ok) {
+            console.log(`Customer with ID ${editingCustomerId} updated.`);
+            this.populateCustomerData();
+            // You may want to update the state or refresh the customer list
+        } else {
+            const errorData = await response.json();
+            const errorMessage = errorData.message || 'Failed to update customer.';
+            throw new Error(errorMessage);
+        }
+    } catch (error) {
+        console.error('Error:', error.message);
+        this.setState({ error: error.message });
+    }
+
+    //this.handleCancelEdit(); // Call handleCancelEdit instead of recursively calling handleSave
+};
 
     handleCreateCustomer = async (name, address) => {
         // Make an API request to create the customer
@@ -135,28 +228,7 @@ export class CustomerList extends Component {
         }
     };
 
-    handleEdit = (customerId, customerName, customerAddress) => {
-        // Store the customer ID, name, and address in the component state
-        this.setState({
-            editingCustomerId: customerId,
-            editedName: customerName,
-            editedAddress: customerAddress,
-        });
 
-
-        // Global 
-        window.updateEditedName = (value) => {
-            this.setState({ editedName: value });
-        };
-
-        window.updateEditedAddress = (value) => {
-            this.setState({ editedAddress: value });
-        };
-
-        window.saveEditedCustomer = (customerId) => {
-            this.handleSave(customerId);
-        };
-    };
 
     handleDelete = async (customerId) => {
         // Open a new window
@@ -199,43 +271,11 @@ export class CustomerList extends Component {
         }
     };
 
-    handleSave = async () => {
-        const { editingCustomerId, editedName, editedAddress } = this.state;
 
-        // Make an API request to update the customer with the edited values
-        try {
-            const response = await fetch(`api/customers/${editingCustomerId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    id: editingCustomerId,
-                    name: editedName,
-                    address: editedAddress,
-                }),
-            });
+    //handleCancelEdit = () => {
+    //    this.setState({ editingCustomerId: null, editedName: '', editedAddress: '' });
+    //};
 
-            if (response.ok) {
-                console.log(`Customer with ID ${editingCustomerId} updated.`);
-                this.populateCustomerData();
-                // You may want to update the state or refresh the customer list
-            } else {
-                const errorData = await response.json();
-                const errorMessage = errorData.message || 'Failed to update customer.';
-                throw new Error(errorMessage);
-            }
-        } catch (error) {
-            console.error('Error:', error.message);
-            this.setState({ error: error.message });
-        }
-
-        this.handleCancelEdit(); // Call handleCancelEdit instead of recursively calling handleSave
-    };
-
-    handleCancelEdit = () => {
-        this.setState({ editingCustomerId: null, editedName: '', editedAddress: '' });
-    };
     async populateCustomerData() {
         console.log('Called api method');
         const response = await fetch('api/customers');
