@@ -1,5 +1,6 @@
 ﻿using System;
 using MVPOnboarding1.Dto;
+using MVPOnboarding1.Models;
 
 
 namespace MVPOnboarding1.Code
@@ -7,39 +8,6 @@ namespace MVPOnboarding1.Code
 {
     public static class Mapper
     {
-
-        public static Models.Sale MapSale(Dto.SaleDto Sale)
-        {
-            var sale = new Models.Sale();
-            if (Sale != null)
-            {
-                sale.Id = Sale.Id;
-                sale.Customer.Name = Sale.CustomerName;
-                sale.Product.Name = Sale.ProductName;
-                sale.Store.Name = Sale.StoreName;
-                sale.DateSold = Sale.DateSold;
-            }
-            return sale;
-        }
-
-        public static Dto.SaleDto MapSaleDto(Models.Sale Sale)
-        {
-            var sale = new SaleDto();
-
-            if (Sale != null)
-            {
-                sale = new Dto.SaleDto
-                {
-                    Id = Sale.Id,
-                    CustomerName = Sale?.Customer?.Name,
-                    ProductName = Sale?.Product?.Name,
-                    StoreName = Sale?.Store?.Name,
-                    DateSold = Sale?.DateSold,
-                };
-            };
-            return sale;
-        }
-
 
         public static Dto.CustomerDto MapCustomerDto(Models.Customer Customer)
         {
@@ -58,6 +26,42 @@ namespace MVPOnboarding1.Code
 
             return customer;
         }
+        public static Models.Sale MapSale(Dto.SaleDto Sale)
+        {
+            var sale = new Models.Sale();
+            if (Sale != null)
+            {
+                sale.Id = Sale.Id;
+                sale.Customer.Id = Sale.CustomerId;
+                sale.Customer.Name = Sale.CustomerName;
+                sale.Product.Name = Sale.ProductName;
+                sale.Store.Name = Sale.StoreName;
+                sale.DateSold = Sale.DateSold;
+            }
+            return sale;
+        }
+
+        public static Dto.SaleDto MapSaleDto(Models.Sale Sale)
+        {
+            var sale = new SaleDto();
+
+            if (Sale != null)
+            {
+                sale = new Dto.SaleDto
+                {
+                    Id = Sale.Id,
+                    CustomerId = (int)(Sale?.Customer?.Id),
+                    CustomerName = Sale?.Customer?.Name,
+                    ProductName = Sale?.Product?.Name,
+                    StoreName = Sale?.Store?.Name,
+                    DateSold = Sale?.DateSold,
+                };
+            };
+            return sale;
+        }
+
+
+     
 
         public static Models.Customer MapCustomer(CustomerDto Customer)
         {

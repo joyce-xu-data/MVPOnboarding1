@@ -4,6 +4,7 @@ import CreateCustomer from './CreateCustomer';
 import EditCustomer from './EditCustomer';
 import { generateDeleteWindowContent } from './DeleteCustomer';
 
+
 export class CustomerList extends Component {
     constructor(props) {
         super(props);
@@ -18,8 +19,8 @@ export class CustomerList extends Component {
             showEditWindow: false
 
         };
-        this.handleSave = this.handleSave.bind(this);
-    }
+    //    this.handleSave = this.handleSave.bind(this);
+    //}
     openCreatePopup = () => {
         const createCustomer = new CreateCustomer();
         createCustomer.openCreatePopup();
@@ -47,6 +48,7 @@ export class CustomerList extends Component {
 
     componentDidMount() {
         console.log("component did mount - parent")
+        this.fetchSales();
         this.populateCustomerData();
         window.addEventListener('message', this.handlePopupMessage);
     }
@@ -229,6 +231,14 @@ export class CustomerList extends Component {
     };
 
 
+    async fetchSales() {
+        console.log('Called fetchSales method');
+        const response = await fetch('api/sales');
+        console.log(response);
+        const data = await response.json();
+        console.log("fetchSales: ", data);
+        this.setState({ sales: data, loading: false });
+    }
 
     handleDelete = async (customerId) => {
         // Open a new window
@@ -247,7 +257,42 @@ export class CustomerList extends Component {
         };
     };
 
+ 
+
     handleConfirmDelete = async (customerId) => {
+        console.log('customerId:', customerId);
+        console.log('this.state.sales:', this.state.sales);
+        const dataExist = this.state.sales.find(
+            (sales) =>
+                sales.customerId === customerId
+        );
+        if (dataExist) {
+            console.log(
+                "Failed to delete this customer. The customer may have existing sale records.",
+            );
+
+            // Open a new window with the popup content
+            const popupWindow = window.open('', '_blank', 'width=400,height=200');
+
+            popupWindow.document.write(`
+       <html>
+          <head>
+            <title>Delete Failed</title>
+            <link rel="stylesheet" type="text/css" href="/Customer/Popup.css">
+          </head>
+          <body>
+            <h2>Delete Failed</h2>
+            <p>Failed to delete this customer. The customer may have existing sale records.</p>
+            <script>
+              setTimeout(() => window.close(), 2000);
+            </script>
+          </body>
+        </html>
+    `);
+
+            popupWindow.document.close();
+            return {};
+        }
         // Make an API request to delete the customer
         try {
             const response = await fetch(`api/customers/${customerId}`, {

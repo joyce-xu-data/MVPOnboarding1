@@ -6,6 +6,8 @@ namespace MVPOnboarding1.Dto
 
         public int Id { get; set; }
 
+        public int CustomerId { get; set; }
+
         public string ProductName { get; set; } = String.Empty;
 
         public string CustomerName { get; set; } = String.Empty;

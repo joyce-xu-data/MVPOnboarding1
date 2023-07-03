@@ -1,33 +1,14 @@
 ﻿import React, { Component } from 'react';
 
+
 export function generateDeleteWindowContent(customerId) {
     return `
     <html>
-      <head>
-        <style>
-          /* Styles for the delete window */
-          ${`
-            body {
-              font-family: 'Segoe UI', sans-serif;
-              background-color: #f9f9f9;
-              padding: 20px;
-            }
+   <head>
+    
+     <link rel="stylesheet" href="Popup.css">
+</head>
 
-            h2 {
-              font-size: 24px;
-              margin-bottom: 20px;
-            }
-
-            p {
-              margin-bottom: 20px;
-            }
-
-            .ui.button {
-              margin-right: 10px;
-            }
-          `}
-        </style>
-      </head>
       <body>
         <div class="ui segment">
           <h2 class="ui header">Delete Customer</h2>
