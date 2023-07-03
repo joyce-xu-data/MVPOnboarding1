@@ -17,7 +17,7 @@ export class SaleList extends Component {
             editedStoreName: '',
             editedDateSold: '',
             error: null,
-            showCreatePopup: false,
+            //showCreatePopup: false,
             customers: [],
             products: [],
             stores: [],
@@ -26,12 +26,35 @@ export class SaleList extends Component {
     }
 
     openCreatePopup = () => {
+        console.log("opencreatepopup")
         this.setState({ showCreatePopup: true });
     };
 
     closeCreatePopup = () => {
         this.setState({ showCreatePopup: false });
     };
+
+    openEditWindow = (sale) => {
+        const { id: saleId, customerName, productName, storeName, dateSold } = sale;
+        console.log("openEDITwin: ", sale);
+        const editSale = new EditSale({ customers: this.state.customers, products: this.state.products, stores: this.state.stores });
+        editSale.openEditWindow2(saleId, customerName, productName, storeName, dateSold);
+    };
+    //openEditWindow = (sale) => {
+    //    console.log("openEditWindow2")
+    //    const { saleId, customerName, productName, storeName, dateSold } = sale;
+    //    const editSale = new EditSale();
+    //    editSale.openEditWindow2(saleId, customerName, productName, storeName, dateSold);
+
+    //};
+
+    //openEditWindow = (sale) => {
+    //    console.log("openEditWindow2");
+    //    const { id: saleId, customerName, productName, storeName, dateSold } = sale;
+    //    const editSale = new EditSale();
+    //    editSale.openEditWindow2(saleId, customerName, productName, storeName, dateSold);
+    //};
+
 
     componentDidMount() {
         this.populateSaleData();
@@ -41,7 +64,7 @@ export class SaleList extends Component {
 
 
     handlePopupMessage = (event) => {
-        const { type, customerName, productName, storeName, dateSold } = event.data;
+        const { type, saleId: eventId, customerName, productName, storeName, dateSold } = event.data;
         if (type === 'createSale') {
             const newSale = {
                 id: this.state.sales.length + 1,
@@ -51,10 +74,20 @@ export class SaleList extends Component {
                 dateSold,
             };
             this.handleCreateSale(newSale);
-        } else if (type === 'cancelCreateSale') {
-            this.closeCreatePopup();
+        } else if (type === 'updateSale') {
+            const updatedSaleData = {
+                saleId: eventId,
+                customerName,
+                productName,
+                storeName,
+                dateSold
+            };
+            console.log('Updated sale data:', updatedSaleData);
+            this.handleSave(updatedSaleData);
         }
     };
+
+
 
     handleCreateSale = async (saleData) => {
         // Make an API request to create the sale
@@ -99,17 +132,17 @@ export class SaleList extends Component {
 
     handleSave = async (xxx) => {
         console.log('handlesave being called')
-        const {
-            editingSaleId,
-            editedCustomerName,
-            editedProductName,
+        //const {
+        //    editingSaleId,
+        //    editedCustomerName,
+        //    editedProductName,
 
-            editedStoreName,
-            editedDateSold,
-        } = this.state;
+        //    editedStoreName,
+        //    editedDateSold,
+        //} = this.state;
 
         const updatedSale = {
-            id: editingSaleId,
+            id: xxx.saleId,
             customerName: xxx.customerName,
             productName: xxx.productName,
             storeName: xxx.storeName,
@@ -123,7 +156,7 @@ export class SaleList extends Component {
             }));
 
         try {
-            const response = await fetch(`api/sales/${editingSaleId}`, {
+            const response = await fetch(`api/sales/${xxx.saleId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -136,7 +169,7 @@ export class SaleList extends Component {
             if (response.ok) {
 
                 this.populateSaleData();
-                console.log(`Sale with ID ${editingSaleId} updated.`);
+                console.log(`Sale with ID ${xxx.saleId} updated.`);
             } else {
                 const errorData = await response.json();
                 const errorMessage = errorData.message || 'Failed to update sale.';
@@ -263,7 +296,7 @@ export class SaleList extends Component {
                                 <td>{sale.storeName}</td>
                                 <td>{sale.dateSold ? new Date(sale.dateSold).toLocaleDateString('en-UK', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}</td>
                                 <td>
-                                    <button className="ui button" onClick={() => this.handleEdit(sale.id, sale.customerName, sale.productName, sale.storeName, sale.dateSold)}>Edit</button>
+                                    <button className="ui button" onClick={() => this.openEditWindow(sale)}>Edit</button>
                                     <button className="ui button" onClick={() => this.handleDelete(sale.id)}>Delete</button>
                                 </td>
                             </tr>
@@ -273,17 +306,19 @@ export class SaleList extends Component {
 
                 {editingSaleId && (
                     <EditSale
-                        sale={{
-                            customers,
-                            products,
-                            stores,
-                        }}
+                        //sale={{
+                        //    customers,
+                        //    products,
+                        //    stores
+                        //}}
+                        customers={customers}
+                        products={products}
+                        stores={stores}
                         saleId={editingSaleId}
                         customerName={editedCustomerName}
                         productName={editedProductName}
                         storeName={editedStoreName}
                         dateSold={editedDateSold}
-                        onSave={this.handleSave}
                         onCancel={this.handleCancelEdit}
 
                     />
@@ -296,4 +331,3 @@ export class SaleList extends Component {
 }
 
 export default SaleList;
-

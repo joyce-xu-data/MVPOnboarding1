@@ -15,7 +15,7 @@ export class EditCustomer extends Component {
 
 
     openEditWindow2 = (customerId, customerName, customerAddress) => {
-        console.log("openeditwindow-child")
+        console.log("openeditwindow-child:",customerId,customerName,customerAddress)
 
         const editWindow = window.open('', '_blank', 'width=400,height=300');
         console.log("this.editwindow")

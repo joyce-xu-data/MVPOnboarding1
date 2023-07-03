@@ -17,7 +17,38 @@ export class CreateCustomer extends Component {
       <html>
         <head>
           <title>Create New Customer</title>
-          
+              <style>
+            ${`
+              /* Additional custom styles for the create popup window */
+              body {
+                font-family: 'Segoe UI', sans-serif;
+                background-color: #f9f9f9;
+                padding: 20px;
+              }
+              
+              h2 {
+                font-size: 24px;
+                margin-bottom: 20px;
+              }
+              
+              .form-container {
+                background-color: #fff;
+                border: 1px solid #ddd;
+                padding: 20px;
+              }
+              
+              .form-container select,
+              .form-container input {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 10px;
+              }
+              
+              .form-container button {
+                margin-right: 10px;
+              }
+            `}
+          </style>
         </head>
         <body>
           <div class="form-container">

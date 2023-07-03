@@ -19,19 +19,20 @@ export class CustomerList extends Component {
             showEditWindow: false
 
         };
-    //    this.handleSave = this.handleSave.bind(this);
-    //}
+        this.handleSave = this.handleSave.bind(this);
+    }
     openCreatePopup = () => {
         const createCustomer = new CreateCustomer();
         createCustomer.openCreatePopup();
     };
 
     openEditWindow = (customer) => {
+        console.log(customer)
         const { id: customerId, name: customerName, address: customerAddress } = customer;
         const editCustomer = new EditCustomer();
         editCustomer.openEditWindow2(customerId, customerName, customerAddress);
 
-        console.log("openEditWindow2")
+        console.log(customerId,customerName,customerAddress)
 
     };
 
@@ -51,7 +52,8 @@ export class CustomerList extends Component {
         this.fetchSales();
         this.populateCustomerData();
         window.addEventListener('message', this.handlePopupMessage);
-    }
+        };
+
 
     renderCustomerTable(customers, handleEdit, handleDelete, handleSave) {
         return (

@@ -90,7 +90,7 @@ class CreateSale extends Component {
             <button onclick="window.close()">Cancel</button>
             <script>
               // Function to handle creating a new sale in the main window and close the create popup window
-              function handleCreateSale() {
+              function handleCreateSale2() {
                 const customerName = document.getElementById('customerName').value;
                 const productName = document.getElementById('productName').value;
                 const storeName = document.getElementById('storeName').value;
@@ -110,11 +110,11 @@ class CreateSale extends Component {
               }
 
               const createButton = document.getElementById('createButton');
-              createButton.addEventListener('click', handleCreateSale);
+              createButton.addEventListener('click', handleCreateSale2);
 
               // Remove the event listener when the pop-up window is closed
               window.addEventListener('beforeunload', () => {
-                createButton.removeEventListener('click', handleCreateSale);
+                createButton.removeEventListener('click', handleCreateSale2);
               });
             </script>
           </div>
