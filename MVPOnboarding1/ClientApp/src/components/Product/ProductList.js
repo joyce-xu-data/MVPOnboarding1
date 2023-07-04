@@ -16,6 +16,7 @@ export class ProductList extends Component {
             editedPrice: '',
             error: null,
             showCreatePopup: false,
+            showEditWindow: false
 
         };
         this.handleSave = this.handleSave.bind(this);
@@ -25,13 +26,24 @@ export class ProductList extends Component {
         createProduct.openCreatePopup();
     };
 
+    openEditWindow = (product) => {
+        console.log(product)
+        const { id: productId, name: productName, price: productPrice } = product;
+        const editProduct = new EditProduct();
+        editProduct.openEditWindow2(productId, productName, productPrice);
+
+        console.log(productId, productName, productPrice)
+
+    };
+
     componentDidMount() {
+        this.fetchSales();
         this.populateProductData();
         window.addEventListener('message', this.handlePopupMessage);
     }
 
 
-    static renderProductTable(products, handleEdit, handleDelete, handleSave) {
+    renderProductTable(products, handleEdit, handleDelete, handleSave) {
         return (
             <table className="ui celled table" aria-labelledby="tabelLabel">
                 <thead>
@@ -48,7 +60,9 @@ export class ProductList extends Component {
                             <td>{product.name}</td>
                             <td>{product.price.toFixed(2)}</td>
                             <td>
-                                <button className="ui button" onClick={() => handleEdit(product.id, product.name, product.price)}>
+                                        <button className="ui button" onClick={() => this.openEditWindow(product)
+
+                                }>
                                     Edit
                                 </button>
                             </td>
@@ -65,14 +79,13 @@ export class ProductList extends Component {
     }
 
     render() {
-        const { loading, products, editingProductId, error } = this.state;
-
+        const { loading, products, editingProductId, error, showEditWindow, editedName, editedPrice } = this.state;
         let contents = loading ? (
             <p>
                 <em>Loading...</em>
             </p>
         ) : (
-                ProductList.renderProductTable(products, this.handleEdit, this.handleDelete)
+                this.renderProductTable(products, this.openEditWindow, this.handleDelete)
             );
 
         return (
@@ -90,11 +103,12 @@ export class ProductList extends Component {
                     </div>
                 )}
                 <CreateProduct />
-                {editingProductId && (
+                {showEditWindow && editingProductId && (
                     <EditProduct
-                        productId={editingProductId}
-                        productName={this.state.editedName}
-                        productPrice={this.state.editedPrice}
+                        editingProductId={editingProductId}
+                        editedName={editedName}
+                        editedPrice={editedPrice}
+                    //onSave{this.handleSave}
                     />
                 )}
             </div>
@@ -103,13 +117,69 @@ export class ProductList extends Component {
 
 
     handlePopupMessage = (event) => {
-        const { type, name, price } = event.data;
-
+        const { type, productId: eventId, name, price } = event.data;
         if (type === 'createProduct') {
             this.handleCreateProduct(name, price);
+        } else if (type === 'updateProduct') {
+
+            const updatedProductData = {
+                productId: eventId,
+                name,
+                price
+            };
+            console.log("type:", type, "id:", eventId)
+            this.handleEdit(updatedProductData)
+            console.log('updated Product data: ', updatedProductData);
         }
     };
 
+    handleEdit = ({ productId, name: productName, price: productPrice }) => {
+        // Store the product ID, name, and price in the component state
+        this.setState({
+            editingProductId: productId,
+            editedName: productName,
+            editedPrice: productPrice,
+        }, () => {
+            // Call handleSave once the state is updated
+            this.handleSave();
+        });
+    };
+
+    handleSave = async () => {
+
+        const { editingProductId, editedName, editedPrice } = this.state;
+
+
+        // Make an API request to update the product with the edited values
+        try {
+            const response = await fetch(`api/products/${editingProductId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: editingProductId,
+                    name: editedName,
+                    price: editedPrice,
+                }),
+            });
+
+            if (response.ok) {
+                console.log(`Product with ID ${editingProductId} updated.`);
+                this.populateProductData();
+                // You may want to update the state or refresh the product list
+            } else {
+                const errorData = await response.json();
+                const errorMessage = errorData.message || 'Failed to update product.';
+                throw new Error(errorMessage);
+            }
+        } catch (error) {
+            console.error('Error:', error.message);
+            this.setState({ error: error.message });
+        }
+
+        //    this.handleCancelEdit(); // Call handleCancelEdit instead of recursively calling handleSave
+    };
 
 
     handleCreateProduct = async (name, price) => {
@@ -142,33 +212,14 @@ export class ProductList extends Component {
         }
     };
 
-
-    handleEdit = (productId, productName, productPrice) => {
-        // Store the product ID, name, and price in the component state
-        this.setState({
-            editingProductId: productId,
-            editedName: productName,
-            editedPrice: productPrice,
-        });
-
-        console.log('editingProductId:', productId);
-        console.log('editedProductName:', productName);
-        console.log('editedProductPrice:', productPrice)
-
-        // Global 
-        window.updateEditedName = (value) => {
-            this.setState({ editedName: value });
-        };
-
-        window.updateEditedPrice = (value) => {
-            this.setState({ editedPrice: value });
-        };
-
-        window.saveEditedProduct = (productId) => {
-            this.handleSave(productId);
-        };
-    };
-
+    async fetchSales() {
+        console.log('Called fetchSales method');
+        const response = await fetch('api/sales');
+        console.log(response);
+        const data = await response.json();
+        console.log("fetchSales: ", data);
+        this.setState({ sales: data, loading: false });
+    }
 
     handleDelete = async (productId) => {
         // Open a new window
@@ -189,6 +240,34 @@ export class ProductList extends Component {
 
 
     handleConfirmDelete = async (productId) => {
+        const dataExist = this.state.sales.find(
+            (sales) =>
+                sales.productId === productId
+        );
+        if (dataExist) {
+
+            // Open a new window with the popup content
+            const popupWindow = window.open('', '_blank', 'width=400,height=200');
+
+            popupWindow.document.write(`
+       <html>
+          <head>
+            <title>Delete Failed</title>
+            <link rel="stylesheet" type="text/css" href="/Customer/Popup.css">
+          </head>
+          <body>
+            <h2>Delete Failed</h2>
+            <p>Failed to delete this product. The product may have existing sale records.</p>
+            <script>
+              setTimeout(() => window.close(), 2000);
+            </script>
+          </body>
+        </html>
+    `);
+
+            popupWindow.document.close();
+            return {};
+        }
         // Make an API request to delete the product
         try {
             const response = await fetch(`api/products/${productId}`, {
@@ -222,51 +301,5 @@ export class ProductList extends Component {
         this.setState({ products: data, loading: false });
     }
 
-    handleSave = async (whatproduct) => {
-        console.log(whatproduct)
-        const { editingProductId, editedName, editedPrice } = this.state;
-
-        
-        console.log(editingProductId, editedName, editedPrice)
-
-        // Make an API request to update the product with the edited values
-        try {
-            const response = await fetch(`api/products/${editingProductId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    id: editingProductId,
-                    name: editedName,
-                    price: editedPrice,
-                }),
-            });
-
-            if (response.ok) {
-                console.log(`Product with ID ${editingProductId} updated.`);
-                this.populateProductData();
-                // You may want to update the state or refresh the product list
-            } else {
-                const errorData = await response.json();
-                const errorMessage = errorData.message || 'Failed to update product.';
-                throw new Error(errorMessage);
-            }
-        } catch (error) {
-            console.error('Error:', error.message);
-            this.setState({ error: error.message });
-        }
-
-        this.handleCancelEdit(); // Call handleCancelEdit instead of recursively calling handleSave
-    };
-
-    handleCancelEdit = () => {
-        this.setState({ editingProductId: null, editedName: '', editedPrice: '' });
-    };
 }
-
-
-
-
-
 export default ProductList;

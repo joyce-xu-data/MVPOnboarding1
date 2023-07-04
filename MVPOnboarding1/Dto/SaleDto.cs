@@ -8,6 +8,10 @@ namespace MVPOnboarding1.Dto
 
         public int CustomerId { get; set; }
 
+        public int ProductId { get; set; }
+
+        public int StoreId { get; set; }
+
         public string ProductName { get; set; } = String.Empty;
 
         public string CustomerName { get; set; } = String.Empty;

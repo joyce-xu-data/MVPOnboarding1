@@ -15,6 +15,7 @@ export class StoreList extends Component {
             editedAddress: '',
             error: null,
             showCreatePopup: false,
+            showEditWindow: false
 
         };
         this.handleSave = this.handleSave.bind(this);
@@ -24,12 +25,20 @@ export class StoreList extends Component {
         createStore.openCreatePopup();
     };
 
+    openEditWindow = (store) => {
+
+        const { id: storeId, name: storeName, address: storeAddress } = store;
+        const editStore = new EditStore();
+        editStore.openEditWindow2(storeId, storeName, storeAddress);
+
+    };
     componentDidMount() {
+        this.fetchSales();
         this.populateStoreData();
         window.addEventListener('message', this.handlePopupMessage);
-    }
+    };
 
-    static renderStoreTable(stores, handleEdit, handleDelete, handleSave) {
+    renderStoreTable(stores, handleEdit, handleDelete, handleSave) {
         return (
             <table className="ui celled table" aria-labelledby="tabellabel">
                 <thead>
@@ -46,7 +55,9 @@ export class StoreList extends Component {
                             <td>{store.name}</td>
                             <td>{store.address}</td>
                             <td>
-                                <button className="ui button" onClick={() => handleEdit(store.id, store.name, store.address)}>
+                                <button className="ui button" onClick={() => this.openEditWindow(store)
+
+                                }>
                                     Edit
                                 </button>
                             </td>
@@ -63,13 +74,13 @@ export class StoreList extends Component {
     }
 
     render() {
-        const { loading, stores, editingStoreId, error } = this.state;
+        const { loading, stores, editingStoreId, error, showEditWindow, editedName, editedAddress } = this.state;
         let contents = loading ? (
             <p>
                 <em>Loading...</em>
             </p>
         ) : (
-                StoreList.renderStoreTable(stores, this.handleEdit, this.handleDelete)
+                this.renderStoreTable(stores, this.openEditWindow, this.handleDelete, this.handleSave)
             );
         return (
             <div>
@@ -86,25 +97,77 @@ export class StoreList extends Component {
                     </div>
                 )}
                 <CreateStore />
-                {editingStoreId && (
+                {showEditWindow && editingStoreId && (
                     <EditStore
-                        storeId={editingStoreId}
-                        storeName={this.state.editedName}
-                        storeAddress={this.state.editedAddress}
+                        editingStoreId={editingStoreId}
+                        editedName={editedName}
+                        editedAddress={editedAddress}
                     />
-
                 )}
-
             </div>
         );
     }
 
     handlePopupMessage = (event) => {
-        const { type, name, address } = event.data;
+        const { type, storeId: eventId, name, address } = event.data;
         if (type === 'createStore') {
             this.handleCreateStore(name, address);
+        } else if (type === 'updateStore') {
+
+            const updatedStoreData = {
+                storeId: eventId,
+                name,
+                address
+            };
+            this.handleEdit(updatedStoreData)
+            console.log('updated Store data: ', updatedStoreData);
         }
     };
+
+    handleEdit = ({ storeId, name: storeName, address: storeAddress }) => {
+        // Store the store ID, name, and address in the component state
+        this.setState({
+            editingStoreId: storeId,
+            editedName: storeName,
+            editedAddress: storeAddress,
+        }, () => {
+            // Call handleSave once the state is updated
+            this.handleSave();
+        });
+    };
+
+    handleSave = async () => {
+        const { editingStoreId, editedName, editedAddress } = this.state;
+
+        // Make an API request to update the store with the edited values
+        try {
+            const response = await fetch(`api/stores/${editingStoreId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: editingStoreId,
+                    name: editedName,
+                    address: editedAddress,
+                }),
+            });
+
+            if (response.ok) {
+                console.log(`Store with ID ${editingStoreId} updated.`);
+                this.populateStoreData();
+
+            } else {
+                const errorData = await response.json();
+                const errorMessage = errorData.message || 'Failed to update store.';
+                throw new Error(errorMessage);
+            }
+        } catch (error) {
+            console.error('Error:', error.message);
+            this.setState({ error: error.message });
+        }
+    };
+
 
     handleCreateStore = async (name, address) => {
         // Make an API request to create the store
@@ -135,28 +198,14 @@ export class StoreList extends Component {
         }
     };
 
-    handleEdit = (storeId, storeName, storeAddress) => {
-        // Store the store ID, name, and address in the component state
-        this.setState({
-            editingStoreId: storeId,
-            editedName: storeName,
-            editedAddress: storeAddress,
-        });
-
-
-        // Global 
-        window.updateEditedName = (value) => {
-            this.setState({ editedName: value });
-        };
-
-        window.updateEditedAddress = (value) => {
-            this.setState({ editedAddress: value });
-        };
-
-        window.saveEditedStore = (storeId) => {
-            this.handleSave(storeId);
-        };
-    };
+    async fetchSales() {
+        console.log('Called fetchSales method');
+        const response = await fetch('api/sales');
+        console.log(response);
+        const data = await response.json();
+        console.log("fetchSales: ", data);
+        this.setState({ sales: data, loading: false });
+    }
 
     handleDelete = async (storeId) => {
         // Open a new window
@@ -176,6 +225,33 @@ export class StoreList extends Component {
     };
 
     handleConfirmDelete = async (storeId) => {
+
+        const dataExist = this.state.sales.find(
+            (sales) =>
+                sales.storeId === storeId
+        );
+        if (dataExist) {
+            // Open a new window with the popup content
+            const popupWindow = window.open('', '_blank', 'width=400,height=200');
+
+            popupWindow.document.write(`
+       <html>
+          <head>
+            <title>Delete Failed</title>
+          </head>
+          <body>
+            <h2>Delete Failed</h2>
+            <p>Failed to delete this store. The store may have existing sale records.</p>
+            <script>
+              setTimeout(() => window.close(), 2000);
+            </script>
+          </body>
+        </html>
+    `);
+
+            popupWindow.document.close();
+            return {};
+        }
         // Make an API request to delete the store
         try {
             const response = await fetch(`api/stores/${storeId}`, {
@@ -199,43 +275,7 @@ export class StoreList extends Component {
         }
     };
 
-    handleSave = async () => {
-        const { editingStoreId, editedName, editedAddress } = this.state;
 
-        // Make an API request to update the store with the edited values
-        try {
-            const response = await fetch(`api/stores/${editingStoreId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    id: editingStoreId,
-                    name: editedName,
-                    address: editedAddress,
-                }),
-            });
-
-            if (response.ok) {
-                console.log(`Store with ID ${editingStoreId} updated.`);
-                this.populateStoreData();
-                // You may want to update the state or refresh the store list
-            } else {
-                const errorData = await response.json();
-                const errorMessage = errorData.message || 'Failed to update store.';
-                throw new Error(errorMessage);
-            }
-        } catch (error) {
-            console.error('Error:', error.message);
-            this.setState({ error: error.message });
-        }
-
-        this.handleCancelEdit(); // Call handleCancelEdit instead of recursively calling handleSave
-    };
-
-    handleCancelEdit = () => {
-        this.setState({ editingStoreId: null, editedName: '', editedAddress: '' });
-    };
     async populateStoreData() {
         console.log('Called api method');
         const response = await fetch('api/stores');

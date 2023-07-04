@@ -5,8 +5,29 @@ export function generateDeleteWindowContent(customerId) {
     return `
     <html>
    <head>
-    
-     <link rel="stylesheet" href="Popup.css">
+   <style>
+          /* Styles for the delete window */
+          ${`
+            body {
+              font-family: 'Segoe UI', sans-serif;
+              background-color: #f9f9f9;
+              padding: 20px;
+            }
+
+            h2 {
+              font-size: 24px;
+              margin-bottom: 20px;
+            }
+
+            p {
+              margin-bottom: 20px;
+            }
+
+            .ui.button {
+              margin-right: 10px;
+            }
+          `}
+        </style>
 </head>
 
       <body>

@@ -10,8 +10,8 @@ export class EditProduct extends Component {
         window.removeEventListener('message', this.handlePopupMessage);
     }
 
-    openEditWindow = () => {
-        const { productId, productName, productPrice } = this.props;
+    openEditWindow2 = (productId, productName, productPrice) => {
+     
 
         // Open a new window
         const editWindow = window.open('', '_blank', 'width=400,height=300');
@@ -50,32 +50,35 @@ export class EditProduct extends Component {
           <h2>Edit Product</h2>
           <input
             type="text"
+            id = "nameInput"
             value="${productName}"
-            onchange="window.opener.updateEditedName(this.value)"
+           
           />
           <input
             type="text"
+            id ="priceInput"
             value="${productPrice}"
-            onchange="window.opener.updateEditedPrice(this.value)"
+            
           />
-          <button onclick="saveAndClose(${productId})">Save</button>
+          <button id="saveButton">Save</button>
           <button onclick="window.close()">Cancel</button>
           <script>
             // Function to update the edited name in the main window
-            window.updateEditedName = (value) => {
-              window.opener.updateEditedName(value);
-            };
+             function handleEdit() {
+            // Get the edited values from the inputs and call the appropriate functions in the main window
+            const nameInput = document.getElementById('nameInput').value;
+            const priceInput = document.getElementById('priceInput').value;
 
-            // Function to update the edited price in the main window
-            window.updateEditedPrice = (value) => {
-              window.opener.updateEditedPrice(value);
-            };
-
-            // Function to save the edited product in the main window and close the edit window
-            function saveAndClose(productId) {
-              window.opener.saveEditedProduct(productId);
-              window.close();
-            }
+            window.opener.postMessage(
+              { type: 'updateProduct',
+                productId:${productId},
+                name: nameInput,
+                price: priceInput },
+              window.origin
+            );
+            window.close();
+          }
+          document.getElementById('saveButton').addEventListener('click', handleEdit);
           </script>
         </body>
       </html>

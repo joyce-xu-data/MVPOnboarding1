@@ -1,17 +1,18 @@
 ﻿import React, { Component } from 'react';
 
 export class EditCustomer extends Component {
-    //componentDidMount() {
-    //    console.log("componentdidmount-edit")
-    //    window.addEventListener('message', this.handlePopupMessage);
+    // good practice to have 
+    componentDidMount() {
+        console.log("componentdidmount-edit")
+        window.addEventListener('message', this.handlePopupMessage);
 
-    //}
+    }
 
-    //componentWillUnmount() {
-    //    console.log("componentwillunmount")
-    //    window.removeEventListener('message', this.handlePopupMessage);
-    //}
-    //good practice to have the above but not necessary here as window.opener.postMessage sends the msg to parent window
+    componentWillUnmount() {
+        console.log("componentwillunmount")
+        window.removeEventListener('message', this.handlePopupMessage);
+    }
+
 
 
     openEditWindow2 = (customerId, customerName, customerAddress) => {

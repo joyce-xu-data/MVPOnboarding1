@@ -10,8 +10,7 @@ export class EditStore extends Component {
         window.removeEventListener('message', this.handlePopupMessage);
     }
 
-    openEditWindow = () => {
-        const { storeId, storeName, storeAddress } = this.props;
+    openEditWindow2 = (storeId,storeName,storeAddress) => {
 
         // Open a new window
         const editWindow = window.open('', '_blank', 'width=400,height=300');
@@ -50,32 +49,38 @@ export class EditStore extends Component {
           <h2>Edit Store</h2>
           <input
             type="text"
+            id = "nameInput"
             value="${storeName}"
-            onchange="window.opener.updateEditedName(this.value)"
+          
           />
           <input
             type="text"
+            id = "addressInput"
             value="${storeAddress}"
-            onchange="window.opener.updateEditedAddress(this.value)"
+            
           />
-          <button onclick="saveAndClose(${storeId})">Save</button>
+          <button id="saveButton">Save</button>
           <button onclick="window.close()">Cancel</button>
-          <script>
-            // Function to update the edited name in the main window
-            window.updateEditedName = (value) => {
-              window.opener.updateEditedName(value);
-            };
+           <script>
+          // Function to update the edited name in the main window
+            function handleEdit() {
+            // Get the edited values from the inputs and call the appropriate functions in the main window
+            const nameInput = document.getElementById('nameInput').value;
+            const addressInput = document.getElementById('addressInput').value;
 
-            // Function to update the edited address in the main window
-            window.updateEditedAddress = (value) => {
-              window.opener.updateEditedAddress(value);
-            };
+            window.opener.postMessage(
+              { type: 'updateStore',
+                storeId:${storeId},
+                name: nameInput,
+                address: addressInput },
+              window.origin
+            );
+            window.close();
+          }
 
-            // Function to save the edited store in the main window and close the edit window
-            function saveAndClose(storeId) {
-              window.opener.saveEditedStore(storeId);
-              window.close();
-            }
+            document.getElementById('saveButton').addEventListener('click', handleEdit);
+
+          
           </script>
         </body>
       </html>

@@ -8,24 +8,7 @@ namespace MVPOnboarding1.Code
 {
     public static class Mapper
     {
-
-        public static Dto.CustomerDto MapCustomerDto(Models.Customer Customer)
-        {
-            var customer = new CustomerDto();
-
-            if (Customer != null)
-            {
-                customer = new Dto.CustomerDto
-                {
-                    Id = Customer.Id,
-                    Address = Customer.Address,
-                    Name = Customer.Name,
-                };
-
-            }
-
-            return customer;
-        }
+        
         public static Models.Sale MapSale(Dto.SaleDto Sale)
         {
             var sale = new Models.Sale();
@@ -33,6 +16,8 @@ namespace MVPOnboarding1.Code
             {
                 sale.Id = Sale.Id;
                 sale.Customer.Id = Sale.CustomerId;
+                sale.Product.Id = Sale.ProductId;
+                sale.Store.Id = Sale.StoreId;
                 sale.Customer.Name = Sale.CustomerName;
                 sale.Product.Name = Sale.ProductName;
                 sale.Store.Name = Sale.StoreName;
@@ -51,6 +36,8 @@ namespace MVPOnboarding1.Code
                 {
                     Id = Sale.Id,
                     CustomerId = (int)(Sale?.Customer?.Id),
+                    ProductId = (int)(Sale?.Product?.Id),
+                    StoreId = (int)(Sale?.Store?.Id),
                     CustomerName = Sale?.Customer?.Name,
                     ProductName = Sale?.Product?.Name,
                     StoreName = Sale?.Store?.Name,
@@ -61,7 +48,24 @@ namespace MVPOnboarding1.Code
         }
 
 
-     
+        public static Dto.CustomerDto MapCustomerDto(Models.Customer Customer)
+        {
+            var customer = new CustomerDto();
+
+            if (Customer != null)
+            {
+                customer = new Dto.CustomerDto
+                {
+                    Id = Customer.Id,
+                    Address = Customer.Address,
+                    Name = Customer.Name,
+                };
+
+            }
+
+            return customer;
+        }
+
 
         public static Models.Customer MapCustomer(CustomerDto Customer)
         {

@@ -36,17 +36,6 @@ export class CustomerList extends Component {
 
     };
 
-    //openEditWindow = (customerId, customerName, customerAddress) => {
-    //    this.setState({
-    //        editingCustomerId: customerId,
-    //        editedName: customerName,
-    //        editedAddress: customerAddress,
-    //        showEditWindow: true
-    //    });
-
-    //    console.log("openEditWindow")
-    //};
-
     componentDidMount() {
         console.log("component did mount - parent")
         this.fetchSales();
@@ -116,17 +105,9 @@ export class CustomerList extends Component {
                 <CreateCustomer />
                 {showEditWindow && editingCustomerId && (
                     <EditCustomer
-                        //customerId={editingCustomerId}
-                        //customerName={editedName}
-                        //customerAddress={editedAddress}
-                        //onSave={this.handleSave}
-                        //onCancel={this.handleCancelEdit}
                         editingCustomerId={editingCustomerId}
                         editedName={editedName}
                         editedAddress={editedAddress}
-                        onSave={this.handleSave}
-                        //onCancel={this.handleCancelEdit}
-
                     />
 
                 )}
@@ -189,7 +170,7 @@ export class CustomerList extends Component {
         if (response.ok) {
             console.log(`Customer with ID ${editingCustomerId} updated.`);
             this.populateCustomerData();
-            // You may want to update the state or refresh the customer list
+           
         } else {
             const errorData = await response.json();
             const errorMessage = errorData.message || 'Failed to update customer.';
@@ -199,8 +180,6 @@ export class CustomerList extends Component {
         console.error('Error:', error.message);
         this.setState({ error: error.message });
     }
-
-    //this.handleCancelEdit(); // Call handleCancelEdit instead of recursively calling handleSave
 };
 
     handleCreateCustomer = async (name, address) => {
@@ -259,8 +238,6 @@ export class CustomerList extends Component {
         };
     };
 
- 
-
     handleConfirmDelete = async (customerId) => {
         console.log('customerId:', customerId);
         console.log('this.state.sales:', this.state.sales);
@@ -280,7 +257,6 @@ export class CustomerList extends Component {
        <html>
           <head>
             <title>Delete Failed</title>
-            <link rel="stylesheet" type="text/css" href="/Customer/Popup.css">
           </head>
           <body>
             <h2>Delete Failed</h2>
@@ -317,11 +293,6 @@ export class CustomerList extends Component {
             this.setState({ error: error.message });
         }
     };
-
-
-    //handleCancelEdit = () => {
-    //    this.setState({ editingCustomerId: null, editedName: '', editedAddress: '' });
-    //};
 
     async populateCustomerData() {
         console.log('Called api method');
