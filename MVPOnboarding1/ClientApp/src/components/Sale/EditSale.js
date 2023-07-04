@@ -22,7 +22,14 @@ export class EditSale extends Component {
         console.log(custId)
         console.log(custName)
 
-        const editWindow = window.open('', '_blank', 'width=400,height=500');
+        const windowWidth = 400;
+        const windowHeight = 300;
+        const left = (window.screen.width - windowWidth) / 2;
+        const top = (window.screen.height - windowHeight) / 2;
+
+        const editWindow = window.open('', '_blank', `width=${windowWidth}, height=${windowHeight}, left=${left}, top=${top}`);
+
+       
 
         const customerOptions = this.props.customers.map((customer) => (
             `<option key="${customer.id}" value="${customer.name}">

@@ -32,7 +32,7 @@ export class CustomerList extends Component {
         const editCustomer = new EditCustomer();
         editCustomer.openEditWindow2(customerId, customerName, customerAddress);
 
-        console.log(customerId,customerName,customerAddress)
+        console.log(customerId, customerName, customerAddress)
 
     };
 
@@ -41,7 +41,7 @@ export class CustomerList extends Component {
         this.fetchSales();
         this.populateCustomerData();
         window.addEventListener('message', this.handlePopupMessage);
-        };
+    };
 
 
     renderCustomerTable(customers, handleEdit, handleDelete, handleSave) {
@@ -153,34 +153,34 @@ export class CustomerList extends Component {
         const { editingCustomerId, editedName, editedAddress } = this.state;
         console.log(editingCustomerId, editedName, editedAddress)
 
-    // Make an API request to update the customer with the edited values
-    try {
-        const response = await fetch(`api/customers/${editingCustomerId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                id: editingCustomerId,
-                name: editedName,
-                address:editedAddress
-            }),
-        });
+        // Make an API request to update the customer with the edited values
+        try {
+            const response = await fetch(`api/customers/${editingCustomerId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    id: editingCustomerId,
+                    name: editedName,
+                    address: editedAddress
+                }),
+            });
 
-        if (response.ok) {
-            console.log(`Customer with ID ${editingCustomerId} updated.`);
-            this.populateCustomerData();
-           
-        } else {
-            const errorData = await response.json();
-            const errorMessage = errorData.message || 'Failed to update customer.';
-            throw new Error(errorMessage);
+            if (response.ok) {
+                console.log(`Customer with ID ${editingCustomerId} updated.`);
+                this.populateCustomerData();
+
+            } else {
+                const errorData = await response.json();
+                const errorMessage = errorData.message || 'Failed to update customer.';
+                throw new Error(errorMessage);
+            }
+        } catch (error) {
+            console.error('Error:', error.message);
+            this.setState({ error: error.message });
         }
-    } catch (error) {
-        console.error('Error:', error.message);
-        this.setState({ error: error.message });
-    }
-};
+    };
 
     handleCreateCustomer = async (name, address) => {
         // Make an API request to create the customer

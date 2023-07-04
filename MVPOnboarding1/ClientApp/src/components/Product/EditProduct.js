@@ -11,10 +11,17 @@ export class EditProduct extends Component {
     }
 
     openEditWindow2 = (productId, productName, productPrice) => {
-     
+
 
         // Open a new window
-        const editWindow = window.open('', '_blank', 'width=400,height=300');
+        const windowWidth = 400;
+        const windowHeight = 300;
+        const left = (window.screen.width - windowWidth) / 2;
+        const top = (window.screen.height - windowHeight) / 2;
+
+        const editWindow = window.open('', '_blank', `width=${windowWidth}, height=${windowHeight}, left=${left}, top=${top}`);
+
+        
 
         // Write the content of the new window
         editWindow.document.write(`

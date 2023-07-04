@@ -1,5 +1,6 @@
 ﻿import React, { Component } from 'react';
 
+
 export class EditCustomer extends Component {
     // good practice to have 
     componentDidMount() {
@@ -14,42 +15,45 @@ export class EditCustomer extends Component {
     }
 
 
-
     openEditWindow2 = (customerId, customerName, customerAddress) => {
-        console.log("openeditwindow-child:",customerId,customerName,customerAddress)
+        console.log("openeditwindow-child:", customerId, customerName, customerAddress)
 
-        const editWindow = window.open('', '_blank', 'width=400,height=300');
-        console.log("this.editwindow")
+        const windowWidth = 400;
+        const windowHeight = 300;
+        const left = (window.screen.width - windowWidth) / 2;
+        const top = (window.screen.height - windowHeight) / 2;
+
+        const editWindow = window.open('', '_blank', `width=${windowWidth}, height=${windowHeight}, left=${left}, top=${top}`);
+      
 
         // Write the content of the new window
         editWindow.document.write(`
       <html>
-        <head>
-          <title>Edit Customer</title>
-
-          <style>
-            /* Styles for the edit window */
+ <style>
+         /* Styles for the edit window */
             body {
               font-family: 'Segoe UI', sans-serif;
               background-color: #f9f9f9;
-              padding: 20px;
-            }
-
+              padding: 20px;}
+            
+            
             h2 {
               font-size: 24px;
               margin-bottom: 20px;
             }
-
+            
             input {
               width: 100%;
               padding: 10px;
               margin-bottom: 10px;
             }
-
+            
             button {
               margin-right: 10px;
             }
           </style>
+        <head>
+          <title>Edit Customer</title>
         </head>
         <body>
           <h2>Edit Customer</h2>
@@ -92,6 +96,7 @@ export class EditCustomer extends Component {
       </html>
     `);
     };
+
 
     render() {
         return null; // Since this is a popup window, return null as we don't need to render anything
